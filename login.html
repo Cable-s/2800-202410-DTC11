@@ -1,7 +1,12 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-  <!-- firebase CDNs -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- firestore CDN scripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -12,22 +17,17 @@
 
   <!-- our own scripts -->
   <script src="./scripts/firebaseAPI_DTC11.js"></script>
+  <script src="./scripts/authentication.js"></script>
 </head>
 
 <body>
-  Team Name: DTC-11
-  Team Members:
-  <ul>
-    <li> Mat Lee </li>
-    <li> Caleb Janzen </li>
-    <li> Cainan Ziemski Cho </li>
-    <li> Tad Yoon </li>
-    <li> Bradley Hultman </li>
-  </ul>
+  <!-- login container -->
+  <div class="container">
+    <h1>Login</h1>
+  </div>
+  <div id="firebaseui-auth-container"></div>
+  <div id="loader">Loading...</div>
 
-  <bR><br>
-  <!-- button to redirect to the login page -->
-  <a href="login.html" role="button">Log in</a>
 </body>
 
 </html>
