@@ -1,44 +1,47 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
-  <!-- firebase CDNs -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
+    <!-- firebase CDNs -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
-  <!-- our own scripts -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    primary: '#2D2B32',
-                    secondary: '#B2EBF2',
-                    background: '#222229',
-                    accent: 'white'
+    <!-- our own scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D2B32',
+                        secondary: '#B2EBF2',
+                        background: '#222229',
+                        accent: 'white'
+                    }
                 }
             }
         }
-    }
     </script>
-  <script src="./scripts/firebaseAPI_DTC11.js"></script>
+    <script src="./scripts/firebaseAPI_DTC11.js"></script>
 </head>
 
 <body class="flex flex-col justify-center items-center bg-background text-accent">
-    <div class="shadow shadow-lg shadow-secondary rounded-full mt-32"><img src="./images/app_logo.png" alt="Logo" style="width:300px;height:300px;"></div>
+    <div class="shadow shadow-lg shadow-secondary rounded-full mt-32"><img src="./images/app_logo.png" alt="Logo"
+            style="width:300px;height:300px;"></div>
     <div class="mt-10 text-4xl">Harmonia</div>
     <div class="flex flex-col gap-4 mt-6 ">
-        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md">Log In</button>
-        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md">Sign Up.</button>
+        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md">Log
+            In</button>
+        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md">Sign
+            Up.</button>
     </div>
 </body>
 
