@@ -1,14 +1,31 @@
 
 // following code is from 1800 notion and probably firebase documentation
 var ui = new firebaseui.auth.AuthUI(firebase.auth())
-
+function sessionPersistence() {
+  return firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+}
 var uiConfig = {
   callbacks: {
     signInSuccessWithAuthResult: function (authResult, redirectUrl) {
       // User successfully signed in.
       // Return type determines whether we continue the redirect automatically
       // or whether we leave that to developer to handle.
-      return true;
+      var user = authResult.user; // get the user object from the Firebase authentication database
+      if (authResult.additionalUserInfo.isNewUser) {
+        //if new user
+        db.collection("users")
+          .doc(user.uid)
+          .set({
+            //write to firestore. We are using the UID for the ID in users collection
+            name: user.displayName, //"users" collection
+            email: user.email, //with authenticated user's ID (user.uid)
+          }).then(() => {
+            window.location.href = "about.html"
+          })
+      } else {
+        return true;
+      }
+      return false;
     },
     uiShown: function () {
       // The widget is rendered.
@@ -34,4 +51,6 @@ var uiConfig = {
   privacyPolicyUrl: '<your-privacy-policy-url>'
 };
 
-ui.start('#firebaseui-auth-container', uiConfig);
+sessionPersistence().then(() => {
+  ui.start('#firebaseui-auth-container', uiConfig);
+})
