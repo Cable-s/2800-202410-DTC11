@@ -16,25 +16,30 @@
 
   <!-- our own scripts -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#2D2B32',
+                    secondary: '#B2EBF2',
+                    background: '#222229',
+                    accent: 'white'
+                }
+            }
+        }
+    }
+    </script>
   <script src="./scripts/firebaseAPI_DTC11.js"></script>
 </head>
 
-<body>
-  Team Name: DTC-11
-  Team Members:
-  <ul>
-    <li> Mat Lee </li>
-    <li> Caleb Janzen </li>
-    <li> Cainan Ziemski Cho </li>
-    <li> Tad Yoon </li>
-    <li> Bradley Hultman </li>
-  </ul>
-
-  <bR><br>
-  <!-- button to redirect to the login page -->
-  <a href="login.html" role="button">Log in</a>
-  <script src=""></script>
-  <button></button>
+<body class="flex flex-col justify-center items-center bg-background text-accent">
+    <div class="shadow shadow-lg shadow-secondary rounded-full mt-32"><img src="./images/app_logo.png" alt="Logo" style="width:300px;height:300px;"></div>
+    <div class="mt-10 text-4xl">Harmonia</div>
+    <div class="flex flex-col gap-4 mt-6 ">
+        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md">Log In</button>
+        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md">Sign Up</button>
+    </div>
 </body>
 
 </html>

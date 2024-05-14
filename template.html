@@ -16,25 +16,27 @@
 
   <!-- our own scripts -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#2D2B32',
+                    secondary: '#B2EBF2',
+                    background: '#222229',
+                    accent: 'white'
+                }
+            }
+        }
+    }
+    </script>
   <script src="./scripts/firebaseAPI_DTC11.js"></script>
 </head>
 
 <body>
-  Team Name: DTC-11
-  Team Members:
-  <ul>
-    <li> Mat Lee </li>
-    <li> Caleb Janzen </li>
-    <li> Cainan Ziemski Cho </li>
-    <li> Tad Yoon </li>
-    <li> Bradley Hultman </li>
-  </ul>
 
-  <bR><br>
   <!-- button to redirect to the login page -->
-  <a href="login.html" role="button">Log in</a>
-  <script src=""></script>
-  <button></button>
+  <!-- <a href="login.html" role="button">Log in</a> -->
 </body>
 
 </html>
