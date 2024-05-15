@@ -1,0 +1,173 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
+  <!-- firebase CDNs -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+  <!-- our own scripts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#2D2B32',
+                    secondary: '#B2EBF2',
+                    background: '#222229',
+                    accent: 'white'
+                }
+            }
+        }
+    }
+    </script>
+  <script src="./scripts/firebaseAPI_DTC11.js"></script>
+</head>
+
+<body class="text-accent bg-background">
+    <nav id="navbarPlaceholder"></nav>
+
+    <section class="mt-4 mx-3">
+        <div class="flex justify-between text-2xl flex-row">
+            <div class="flex flex-row">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-circle" width="70" height="70" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                    <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                    <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+                </svg>
+                <div class="flex flex-col pl-2 text-xl items-center justify-center">
+                    <div>First Name</div>
+                    <div>Last Name</div>
+                </div>
+            </div>
+            <div class="flex flex-col justify-center items-center mr-4">
+                <button class="border-2 border-secondary/50 shadow-secondary shadow-2xl px-2 py-1 rounded-xl">Edit</button>
+            </div>
+        </div>
+        <div class="flex justify-between pl-2">
+            <div>
+                <div class="text-2xl">
+                    User Info
+                </div>
+                <div class="flex flex-col py-4 text-xl">
+                    <div>Username</div>
+                    <div>Email</div>
+                </div>
+            </div>
+            <div class="">
+                <form action="/logout" method="post" class="space-y-4 p-4 flex flex-col items-center">
+                    <button class="bg-red-700 px-4 py-2 rounded-lg text-white">logout</button>
+                </form>
+            </div>
+        </div>
+        <div class="my-4 text-2xl pl-2">
+            Device Catagories
+        </div>
+        <div class="flex gap-3 overflow-scroll">
+
+            <div class="flex flex-col justify-center bg-primary px-8 pb-8 pt-6 rounded-3xl min-w-[176px]">
+                <div class="flex bg-background rounded-full w-[98] h-[98] p-2 items-center mx-auto border-4 border-secondary/50 shadow-2xl shadow-secondary mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-desktop mx-auto" width="80" height="80" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10z" />
+                        <path d="M7 20h10" />
+                        <path d="M9 16v4" />
+                        <path d="M15 16v4" />
+                    </svg>
+                </div>
+                <div class="flex flex-col text-lg text-center justify-between">
+                    <div>Entertainment</div>
+                    <div>4 Devices</div>
+                    <div>1 Active</div>
+                </div>
+            </div>
+
+
+            <div class="flex flex-col justify-center bg-primary px-8 pb-8 pt-6 rounded-3xl min-w-[176px]">
+                <div class="flex bg-background rounded-full w-[98] h-[98] p-2 items-center mx-auto border-4 border-secondary/50 shadow-2xl shadow-secondary mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cheese mx-auto" width="80" height="80" viewBox="0 1 25 25" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M4.519 20.008l16.481 -.008v-3.5a2 2 0 1 1 0 -4v-3.5h-16.722" />
+                        <path d="M21 9l-9.385 -4.992c-2.512 .12 -4.758 1.42 -6.327 3.425c-1.423 1.82 -2.288 4.221 -2.288 6.854c0 2.117 .56 4.085 1.519 5.721" />
+                        <path d="M15 13v.01" />
+                        <path d="M8 13v.01" />
+                        <path d="M11 16v.01" />
+                      </svg>
+                </div>
+                <div class="flex flex-col text-lg text-center justify-between">
+                    <div>Food</div>
+                    <div>4 Devices</div>
+                    <div>1 Active</div>
+                </div>
+            </div>
+
+
+            <div class="flex flex-col justify-center bg-primary px-8 pb-8 pt-6 rounded-3xl min-w-[176px]">
+                <div class="flex bg-background rounded-full w-[98] h-[98] p-2 items-center mx-auto border-4 border-secondary/50 shadow-2xl shadow-secondary mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-video mx-auto" width="80" height="80" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
+                        <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
+                      </svg>
+                </div>
+                <div class="flex flex-col text-lg text-center justify-between">
+                    <div>Security</div>
+                    <div>4 Devices</div>
+                    <div>1 Active</div>
+                </div>
+            </div>
+
+
+            <div class="flex flex-col justify-center bg-primary px-8 pb-8 pt-6 rounded-3xl min-w-[176px]">
+                <div class="flex bg-background rounded-full w-[98] h-[98] p-2 items-center mx-auto border-4 border-secondary/50 shadow-2xl shadow-secondary mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-ironing-steam" width="80" height="80" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 19v2" />
+                        <path d="M9 4h7.459a3 3 0 0 1 2.959 2.507l.577 3.464l.81 4.865a1 1 0 0 1 -.985 1.164h-16.82a7 7 0 0 1 7 -7h9.8" />
+                        <path d="M8 19l-1 2" />
+                        <path d="M16 19l1 2" />
+                      </svg>
+                </div>
+                <div class="flex flex-col text-lg text-center justify-between">
+                    <div>Cleaning</div>
+                    <div>4 Devices</div>
+                    <div>1 Active</div>
+                </div>
+            </div>
+
+
+            <div class="flex flex-col justify-center bg-primary px-8 pb-8 pt-6 rounded-3xl min-w-[176px]">
+                <div class="flex bg-background rounded-full w-[98] h-[98] p-2 items-center mx-auto border-4 border-secondary/50 shadow-2xl shadow-secondary mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-bulb" width="80" height="80" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7" />
+                        <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" />
+                        <path d="M9.7 17l4.6 0" />
+                      </svg>
+                </div>
+                <div class="flex flex-col text-lg text-center justify-between">
+                    <div>Lighting</div>
+                    <div>4 Devices</div>
+                    <div>1 Active</div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-10">
+            Start
+        </div>
+    </section>
+
+    <nav id="footerPlaceholder"></nav>
+</body>
+
+</html>
