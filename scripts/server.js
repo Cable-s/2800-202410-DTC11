@@ -28,6 +28,7 @@ async function main() {
 const userSchema = new mongoose.Schema({
   username: String,
   email: String,
+  phone: String,
   password: String,
   firstName: String,
   lastName: String
@@ -68,7 +69,7 @@ app.post("/signUp", async (req, res) => {
   if (req.body.password == req.body.repeat_password) {
     saltRounds = 10
     hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-    createdUser = await users.create({ username: req.body.username, email: req.body.email, password: hashedPassword, name: req.body.firstName, lastName: req.body.lastName })
+    createdUser = await users.create({ username: req.body.username, email: req.body.email, phone: req.body.phone, password: hashedPassword, name: req.body.firstName, lastName: req.body.lastName })
   } else {
     return res.redirect("/signUp?error=passwords_dont_match")
   }
