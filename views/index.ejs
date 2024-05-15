@@ -1,0 +1,38 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
+    <!-- our own scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D2B32',
+                        secondary: '#B2EBF2',
+                        background: '#222229',
+                        accent: 'white'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="flex flex-col justify-center items-center bg-background text-accent">
+    <div class="mt-32 shadow shadow-lg shadow-secondary rounded-full"><img src="./images/app_logo.png" alt="Logo" 
+        style="width:300px;height:300px;"></div>
+    <div class="mt-10 text-4xl">Harmonia</div>
+    <div class="flex flex-col gap-4 mt-6 ">
+        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md hover:bg-secondary hover:text-primary">Log
+            In</button>
+        <button class="bg-primary text-2xl p-5 rounded-full border-secondary border-2 shadow-secondary shadow-md hover:bg-secondary hover:text-primary">Sign
+            Up</button>
+    </div>
+</body>
+
+</html>
