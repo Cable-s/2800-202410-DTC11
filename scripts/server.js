@@ -37,11 +37,18 @@ const deviceSchema = new mongoose.Schema({
 const users = mongoose.model('2800users', userSchema)
 const devices = mongoose.model('devices', deviceSchema)
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}))
+// create the session/cookie
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: `mongodb+srv://${username}:${password}@${host}/${database}` }), // Store session in MongoDB
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
+  })
+);
 
 // change this to the homepage
 app.get("/", (req, res)=>{
@@ -84,7 +91,20 @@ app.post("/login", async (req, res)=>{
   }
 })
 
-// unprotected route
-app.get("/homePage", (req, res)=>{
-  res.send("some home page here")
-})
+app.post('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/index');
+});
+
+// middleware for authentication check
+function isAuthenticated(req, res, next) {
+  if (req.session.authenticated) {
+    return next();
+  }
+  res.redirect('/login');
+}
+
+// now a protected route route
+app.get('/homePage', isAuthenticated, (req, res) => {
+  res.send('some home page here');
+});
