@@ -26,9 +26,11 @@ async function main() {
 }
 
 const userSchema = new mongoose.Schema({
+  username: String,
   email: String,
-  name: String,
   password: String,
+  firstName: String,
+  lastName: String
 })
 
 const deviceSchema = new mongoose.Schema({
@@ -52,27 +54,32 @@ app.use(
 );
 
 // change this to the homepage
-app.get("/", (req, res)=>{
+app.get("/", (req, res) => {
   res.redirect("/signUp")
 })
 
-app.get("/signUp", (req, res) =>{
-  res.render("signUp")
+app.get("/signUp", (req, res) => {
+  res.render("signUp", {
+    error: req.query.error
+  })
 })
 
-app.post("/signUp", async (req, res)=>{
-  saltRounds = 10
-  hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-  createdUser = await users.create({email: req.body.email, name: req.body.username, password: hashedPassword})
-
+app.post("/signUp", async (req, res) => {
+  if (req.body.password == req.body.repeat_password) {
+    saltRounds = 10
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+    createdUser = await users.create({ username: req.body.username, email: req.body.email, password: hashedPassword, name: req.body.firstName, lastName: req.body.lastName })
+  } else {
+    return res.redirect("/signUp?error=passwords_dont_match")
+  }
   res.redirect("/login")
 })
 
-app.get("/login", (req, res)=>{
+app.get("/login", (req, res) => {
   res.render("login")
 })
 
-app.post("/login", async (req, res)=>{
+app.post("/login", async (req, res) => {
   usersUsername = req.body.username
   usersPassword = req.body.password
 
@@ -80,14 +87,14 @@ app.post("/login", async (req, res)=>{
     name: usersUsername
   })
 
-  if(user) {
-    bcrypt.compare(usersPassword, user.password, (err, result) =>{
+  if (user) {
+    bcrypt.compare(usersPassword, user.password, (err, result) => {
       // authentication here
       req.session.authenticated = true
       console.log("passwords are the same!")
       return res.redirect("homePage")
     })
-  } else{
+  } else {
     return res.send("Not authenticated page here").status(401)
   }
 })
@@ -107,5 +114,5 @@ function isAuthenticated(req, res, next) {
 
 // now a protected route route
 app.get('/homePage', isAuthenticated, (req, res) => {
-  res.send('some home page here');
+  res.send(`some home page here`);
 });
