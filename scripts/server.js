@@ -109,3 +109,9 @@ function isAuthenticated(req, res, next) {
 app.get('/homePage', isAuthenticated, (req, res) => {
   res.send('some home page here');
 });
+
+app.get('/profile', isAuthenticated, (req, res) => {
+  res.render('profilePage');
+});
+
+app.post('/profile', isAuthenticated, async (req, res) => {});
