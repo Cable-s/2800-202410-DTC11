@@ -72,23 +72,33 @@ app.get("/login", (req, res)=>{
   res.render("login")
 })
 
-app.post("/login", async (req, res)=>{
-  usersUsername = req.body.username
+app.post("/login", async (req, res) => {
+  usersEmail = req.body.email
   usersPassword = req.body.password
 
-  const user = await users.findOne({
-    name: usersUsername
-  })
-
-  if(user) {
-    bcrypt.compare(usersPassword, user.password, (err, result) =>{
-      // authentication here
-      req.session.authenticated = true
-      console.log("passwords are the same!")
-      return res.redirect("homePage")
+  // Check if the email is in the database
+  try {
+    const user = await users.findOne({
+      email: usersEmail
     })
-  } else{
-    return res.send("Not authenticated page here").status(401)
+
+    if (user) {
+      const matchedValue = await bcrypt.compare(usersPassword, user.password, (err, result) => {
+        // Check if the entered password is the same as the stored password
+        if (matchedValue) {
+          req.session.authenticated = true // authentication here
+          return res.redirect("homePage")
+
+        } else {
+          res.status(401).send("Invalid password")
+        }
+      })
+    } else {
+      res.status(401).send("User not found")
+    }
+  }
+  catch (err) {
+    return res.status(500).send("Server error page here. Status code 500") // change
   }
 })
 
