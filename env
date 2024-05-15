@@ -1,5 +1,0 @@
-DB_USERNAME=calebsjanzen
-DB_PASSWORD=6jUu0GNHo6SgXSdK
-DB_HOST=cluster0.9jh0cpu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-DB_DATABASE=comp2800
-SESSION_SECRET=
