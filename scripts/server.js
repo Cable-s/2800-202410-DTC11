@@ -5,6 +5,7 @@ const ejs = require('ejs')
 const bcrypt = require('bcrypt')
 const { Db } = require('mongodb');
 const session = require('express-session')
+const MongoStore = require('connect-mongo')
 
 const app = express()
 app.use(express.urlencoded({ extended: true }));
