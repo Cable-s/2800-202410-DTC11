@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const { Db } = require('mongodb');
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
+const nodemailer = require('nodemailer')
 
 const app = express()
 app.use(express.urlencoded({ extended: true }));
@@ -25,10 +26,23 @@ async function main() {
   })
 }
 
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // Use `true` for port 465, `false` for all other ports
+  auth: {
+    user: process.env.MAILER_USER,
+    pass: process.env.MAILER_PASS,
+  },
+});
+
 const userSchema = new mongoose.Schema({
+  username: String,
   email: String,
-  name: String,
+  phone: String,
   password: String,
+  firstName: String,
+  lastName: String
 })
 
 const deviceSchema = new mongoose.Schema({
@@ -57,42 +71,70 @@ app.get("/", (req, res) => {
 })
 
 app.get("/signUp", (req, res) => {
-  res.render("signUp")
+  res.render("signUp", {
+    error: req.query.error
+  })
 })
 
 app.post("/signUp", async (req, res) => {
-  saltRounds = 10
-  hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-  createdUser = await users.create({ email: req.body.email, name: req.body.username, password: hashedPassword })
+  if (req.body.password == req.body.repeat_password) {
+    saltRounds = 10
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+    const user = new users({ 
+      username: req.body.username, 
+      email: req.body.email, 
+      phone: req.body.phone, 
+      password: hashedPassword, 
+      name: req.body.firstName, 
+      lastName: req.body.lastName 
+    });
 
-  req.session.user = { email: req.body.email, name: req.body.username }; // Store user information in session
+    req.session.user = { 
+      username: req.body.username, 
+      email: req.body.email, 
+      phone: req.body.phone 
+    }; // Store user information in session
 
-  userEmail = req.body.email
-  console.log(userEmail)
+    createdUser = await users.create({ 
+      username: req.body.username, 
+      email: req.body.email, 
+      phone: req.body.phone, 
+      password: hashedPassword, 
+      name: req.body.firstName, 
+      lastName: req.body.lastName 
+    })
+  } else {
+    return res.redirect("/signUp?error=passwords_dont_match")
+  }
   res.redirect("/login")
 })
+
 
 app.get("/login", (req, res) => {
   res.render("login")
 })
 
 app.post("/login", async (req, res) => {
-  usersEmail = req.body.email
+  usersUsername = req.body.username
   usersPassword = req.body.password
 
   // Check if the email is in the database
   try {
     const user = await users.findOne({
-      email: usersEmail
+      username: usersUsername,
     })
 
     if (user) {
-      const matchedValue = await bcrypt.compare(usersPassword, user.password, (err, result) => {
+      await bcrypt.compare(usersPassword, user.password, (err, result) => {
         // Check if the entered password is the same as the stored password
-        if (matchedValue) {
+        if (result) {
           req.session.authenticated = true // authentication here
+          req.session.user = { 
+            username: user.username, 
+            email: user.email, 
+            phone: user.phone 
+          }; // Store user information in session
           return res.redirect("homePage")
-
         } else {
           res.status(401).send("Invalid password")
         }
@@ -105,6 +147,7 @@ app.post("/login", async (req, res) => {
     return res.status(500).send("Server error page here. Status code 500") // change
   }
 })
+
 
 app.post('/logout', (req, res) => {
   req.session.destroy();
@@ -121,8 +164,88 @@ function isAuthenticated(req, res, next) {
 
 // now a protected route route
 app.get('/homePage', isAuthenticated, (req, res) => {
-  res.send('some home page here');
+  res.send(`some home page here`);
 });
+
+// the password recovery route
+app.get("/recovery", (req, res) => {
+  res.render("recovery")
+})
+
+// the password recovery form post route
+app.post("/recovery", async (req, res) => {
+  // if the user is using email to recover
+  if (req.body.email) {
+    //find user with username and email
+    const userForRecovery = await users.findOne({
+      username: req.body.username,
+    })
+    // if the user is found
+    if (userForRecovery) {
+      // generate a random code
+      let randomCode = Math.floor(100000 + Math.random() * 900000)
+      // send the email
+      await transporter.sendMail({
+        // from harmonia gmail account
+        from: '"Harmonia" <harmonia2800@gmail.com>',
+        //to user email
+        to: req.body.email,
+        // subject line
+        subject: "password recovery",
+        //plain text body
+        text: `Your recovery code is ${randomCode}`,
+        // html body
+        html: `<p>Your recovery code is <b>${randomCode}</b></p>`
+      });
+      //render newPassword page and send info to change password
+      res.render("newPassword", {
+        username: req.body.username,
+        email: req.body.email,
+        phone: "",
+        code: randomCode
+      })
+      //if no user is found
+    } else {
+      // send a message to the user
+      return res.send("User not found")
+    }
+  }
+})
+
+// the password recovery form post route
+app.post("/replacePassword", async (req, res) => {
+  // if the user is using email to recover
+  if (req.body.email) {
+    //find user with username and email
+    const userForPasswordChange = await users.findOne({
+      username: req.body.username,
+      email: req.body.email
+    })
+    // salt rounds to hash new password
+    saltRounds = 10
+    // hash the new password
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+    // update the user's password
+    await userForPasswordChange.updateOne({ password: hashedPassword })
+    // redirect the user to the login page
+    return res.redirect("/login")
+  }
+  if (req.body.phone) {
+    //find user with username and email
+    const userForPasswordChange = await users.findOne({
+      username: req.body.username,
+      phone: req.body.phone
+    })
+    // salt rounds to hash new password
+    saltRounds = 10
+    // hash the new password
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+    // update the user's password
+    await userForPasswordChange.updateOne({ password: hashedPassword })
+    // redirect the user to the login page
+    return res.redirect("/login")
+  }
+})
 
 app.get('/profile', isAuthenticated, (req, res) => {
 
@@ -134,9 +257,13 @@ app.get('/profile', isAuthenticated, (req, res) => {
 
   // Get the user's name from the session
   const userName = req.session.user.username;
+  console.log(userName);
   const userEmail = req.session.user.email;
   const userPhone = req.session.user.phone;
   // const userPhonenumber = req.session.user.phonenumber;
-  res.render('profilePage', { userName, userEmail, userPhone });
+  res.render('profilePage', { 
+    userName, 
+    userEmail, 
+    userPhone });
 });
 
