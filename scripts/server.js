@@ -151,7 +151,6 @@ app.post("/recovery", async (req, res) => {
     //find user with username and email
     const userForRecovery = await users.findOne({
       username: req.body.username,
-      email: req.body.email
     })
     // if the user is found
     if (userForRecovery) {
@@ -175,32 +174,6 @@ app.post("/recovery", async (req, res) => {
       // send a message to the user
       return res.send("User not found")
     }
-    // if the user is using phone to recover
-  } else if (req.body.phone) {
-    // find user with username and phone
-    const userForRecovery = await users.findOne({
-      username: req.body.username,
-      phone: req.body.phone,
-    })
-    // if the user is found
-    if (userForRecovery) {
-      // render the new password page and send username, email, phone and a random code that will be sent to the user's phone for verification
-
-      return res.render("newPassword", {
-        username: req.body.username,
-        email: "",
-        phone: user.phone,
-        code: randomCode
-      })
-      // if the user is not found
-    } else {
-      // send a message to the user
-      return res.send("User not found")
-    }
-    // if the user is not using email or phone
-  } else {
-    // send a message to the user
-    return res.send("User not found")
   }
 })
 
