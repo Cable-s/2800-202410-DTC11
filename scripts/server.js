@@ -82,28 +82,28 @@ app.post("/signUp", async (req, res) => {
   if (req.body.password == req.body.repeat_password) {
     saltRounds = 10
     hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-    const user = new users({ 
-      username: req.body.username, 
-      email: req.body.email, 
-      phone: req.body.phone, 
-      password: hashedPassword, 
-      name: req.body.firstName, 
-      lastName: req.body.lastName 
+    const user = new users({
+      username: req.body.username,
+      email: req.body.email,
+      phone: req.body.phone,
+      password: hashedPassword,
+      name: req.body.firstName,
+      lastName: req.body.lastName
     });
 
-    req.session.user = { 
-      username: req.body.username, 
-      email: req.body.email, 
-      phone: req.body.phone 
+    req.session.user = {
+      username: req.body.username,
+      email: req.body.email,
+      phone: req.body.phone
     }; // Store user information in session
 
-    createdUser = await users.create({ 
-      username: req.body.username, 
-      email: req.body.email, 
-      phone: req.body.phone, 
-      password: hashedPassword, 
-      name: req.body.firstName, 
-      lastName: req.body.lastName 
+    createdUser = await users.create({
+      username: req.body.username,
+      email: req.body.email,
+      phone: req.body.phone,
+      password: hashedPassword,
+      name: req.body.firstName,
+      lastName: req.body.lastName
     })
   } else {
     return res.redirect("/signUp?error=passwords_dont_match")
@@ -134,10 +134,10 @@ app.post("/login", async (req, res) => {
         // Check if the entered password is the same as the stored password
         if (result) {
           req.session.authenticated = true // authentication here
-          req.session.user = { 
-            username: user.username, 
-            email: user.email, 
-            phone: user.phone 
+          req.session.user = {
+            username: user.username,
+            email: user.email,
+            phone: user.phone
           }; // Store user information in session
           return res.redirect("homePage")
         } else {
@@ -180,77 +180,57 @@ app.get("/recovery", (req, res) => {
 // the password recovery form post route
 app.post("/recovery", async (req, res) => {
   // if the user is using email to recover
-  if (req.body.email) {
-    //find user with username and email
-    const userForRecovery = await users.findOne({
+  //find user with username and email
+  const userForRecovery = await users.findOne({
+    username: req.body.username,
+  })
+  // if the user is found
+  if (userForRecovery) {
+    // generate a random code
+    let randomCode = Math.floor(100000 + Math.random() * 900000)
+    // send the email
+    await transporter.sendMail({
+      // from harmonia gmail account
+      from: '"Harmonia" <harmonia2800@gmail.com>',
+      //to user email
+      to: userForRecovery.email,
+      // subject line
+      subject: "password recovery",
+      //plain text body
+      text: `Your recovery code is ${randomCode}`,
+      // html body
+      html: `<p>Your recovery code is <b>${randomCode}</b></p>`
+    });
+    //render newPassword page and send info to change password
+    res.render("newPassword", {
       username: req.body.username,
-      email: req.body.email
+      email: userForRecovery.email,
+      phone: "",
+      code: randomCode
     })
-    // if the user is found
-    if (userForRecovery) {
-      // generate a random code
-      let randomCode = Math.floor(100000 + Math.random() * 900000)
-      // send the email
-      await transporter.sendMail({
-        // from harmonia gmail account
-        from: '"Harmonia" <harmonia2800@gmail.com>',
-        //to user email
-        to: req.body.email,
-        // subject line
-        subject: "password recovery",
-        //plain text body
-        text: `Your recovery code is ${randomCode}`,
-        // html body
-        html: `<p>Your recovery code is <b>${randomCode}</b></p>`
-      });
-      //render newPassword page and send info to change password
-      res.render("newPassword", {
-        username: req.body.username,
-        email: req.body.email,
-        phone: "",
-        code: randomCode
-      })
-      //if no user is found
-    } else {
-      // send a message to the user
-      return res.send("User not found")
-    }
+    //if no user is found
+  } else {
+    // send a message to the user
+    return res.send("User not found")
   }
 })
 
 // the password recovery form post route
 app.post("/replacePassword", async (req, res) => {
   // if the user is using email to recover
-  if (req.body.email) {
-    //find user with username and email
-    const userForPasswordChange = await users.findOne({
-      username: req.body.username,
-      email: req.body.email
-    })
-    // salt rounds to hash new password
-    saltRounds = 10
-    // hash the new password
-    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-    // update the user's password
-    await userForPasswordChange.updateOne({ password: hashedPassword })
-    // redirect the user to the login page
-    return res.redirect("/login")
-  }
-  if (req.body.phone) {
-    //find user with username and email
-    const userForPasswordChange = await users.findOne({
-      username: req.body.username,
-      phone: req.body.phone
-    })
-    // salt rounds to hash new password
-    saltRounds = 10
-    // hash the new password
-    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-    // update the user's password
-    await userForPasswordChange.updateOne({ password: hashedPassword })
-    // redirect the user to the login page
-    return res.redirect("/login")
-  }
+  //find user with username and email
+  const userForPasswordChange = await users.findOne({
+    username: req.body.username,
+  })
+  // salt rounds to hash new password
+  saltRounds = 10
+  // hash the new password
+  hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+  // update the user's password
+  await userForPasswordChange.updateOne({ password: hashedPassword })
+  // redirect the user to the login page
+  return res.redirect("/login")
+
 })
 
 app.get('/profile', isAuthenticated, (req, res) => {
@@ -267,9 +247,10 @@ app.get('/profile', isAuthenticated, (req, res) => {
   const userEmail = req.session.user.email;
   const userPhone = req.session.user.phone;
   // const userPhonenumber = req.session.user.phonenumber;
-  res.render('profilePage', { 
-    userName, 
-    userEmail, 
-    userPhone });
+  res.render('profilePage', {
+    userName,
+    userEmail,
+    userPhone
+  });
 });
 
