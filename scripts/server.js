@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const { Db } = require('mongodb');
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
+const nodemailer = require('nodemailer')
 
 const app = express()
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +25,16 @@ async function main() {
     console.log('Server is running')
   })
 }
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // Use `true` for port 465, `false` for all other ports
+  auth: {
+    user: process.env.MAILER_USER,
+    pass: process.env.MAILER_PASS,
+  },
+});
 
 const userSchema = new mongoose.Schema({
   username: String,
@@ -91,7 +102,6 @@ app.post("/login", async (req, res) => {
     })
 
     if (user) {
-      console.log(await bcrypt.compare(usersPassword, user.password))
       await bcrypt.compare(usersPassword, user.password, (err, result) => {
         // Check if the entered password is the same as the stored password
         if (result) {
@@ -146,11 +156,19 @@ app.post("/recovery", async (req, res) => {
     // if the user is found
     if (userForRecovery) {
       // render the new password page and send username, email, phone and a random code that will be sent to the user's email for verification
+      let randomCode = Math.floor(100000 + Math.random() * 900000)
+      await transporter.sendMail({
+        from: '"Harmonia" <harmonia2800@gmail.com>', // sender address
+        to: req.body.email, // list of receivers
+        subject: "password recovery", // Subject line
+        text: `Your recovery code is ${randomCode}`, // plain text body
+        html: `<p>Your recovery code is <b>${randomCode}</b></p>` // html body
+      });
       res.render("newPassword", {
         username: req.body.username,
         email: req.body.email,
         phone: "",
-        code: Math.floor(100000 + Math.random() * 900000)
+        code: randomCode
       })
       //if no user is found
     } else {
@@ -167,11 +185,12 @@ app.post("/recovery", async (req, res) => {
     // if the user is found
     if (userForRecovery) {
       // render the new password page and send username, email, phone and a random code that will be sent to the user's phone for verification
+
       return res.render("newPassword", {
         username: req.body.username,
         email: "",
         phone: user.phone,
-        code: Math.floor(100000 + Math.random() * 900000)
+        code: randomCode
       })
       // if the user is not found
     } else {
