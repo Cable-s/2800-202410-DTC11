@@ -69,11 +69,11 @@ app.use(express.static("public"))
 
 // change this to the homepage
 app.get("/", (req, res) => {
-  res.render("index")
+  res.render("index.ejs")
 })
 
 app.get("/signUp", (req, res) => {
-  res.render("signUp", {
+  res.render("signUp.ejs", {
     error: req.query.error
   })
 })
@@ -116,7 +116,7 @@ app.post("/signUp", async (req, res) => {
 // })
 
 app.get("/login", (req, res) => {
-  res.render("login")
+  res.render("login.ejs")
 })
 
 app.post("/login", async (req, res) => {
@@ -139,7 +139,7 @@ app.post("/login", async (req, res) => {
             email: user.email,
             phone: user.phone
           }; // Store user information in session
-          return res.redirect("homePage")
+          return res.redirect("/homePage")
         } else {
           res.status(401).send("Invalid password")
         }
@@ -174,7 +174,7 @@ app.get('/homePage', isAuthenticated, (req, res) => {
 
 // the password recovery route
 app.get("/recovery", (req, res) => {
-  res.render("recovery")
+  res.render("recovery.ejs")
 })
 
 // the password recovery form post route
