@@ -117,63 +117,93 @@ app.get('/homePage', isAuthenticated, (req, res) => {
   res.send(`some home page here`);
 });
 
+// the password recovery route
 app.get("/recovery", (req, res) => {
   res.render("recovery")
 })
 
+// the password recovery form post route
 app.post("/recovery", async (req, res) => {
+  // if the user is using email to recover
   if (req.body.email) {
+    //find user with username and email
     const userForRecovery = await users.findOne({
       username: req.body.username,
       email: req.body.email
     })
+    // if the user is found
     if (userForRecovery) {
+      // render the new password page and send username, email, phone and a random code that will be sent to the user's email for verification
       res.render("newPassword", {
         username: req.body.username,
         email: req.body.email,
         phone: "",
         code: Math.floor(100000 + Math.random() * 900000)
       })
+      //if no user is found
     } else {
+      // send a message to the user
       return res.send("User not found")
     }
+    // if the user is using phone to recover
   } else if (req.body.phone) {
+    // find user with username and phone
     const userForRecovery = await users.findOne({
       username: req.body.username,
       phone: req.body.phone,
     })
+    // if the user is found
     if (userForRecovery) {
+      // render the new password page and send username, email, phone and a random code that will be sent to the user's phone for verification
       return res.render("newPassword", {
         username: req.body.username,
         email: "",
         phone: user.phone,
         code: Math.floor(100000 + Math.random() * 900000)
       })
+      // if the user is not found
     } else {
+      // send a message to the user
       return res.send("User not found")
     }
+    // if the user is not using email or phone
   } else {
+    // send a message to the user
     return res.send("User not found")
   }
 })
 
+// the password recovery form post route
 app.post("/replacePassword", async (req, res) => {
-  // find user with username and email or phone
+  // if the user is using email to recover
   if (req.body.email) {
+    //find user with username and email
     const userForPasswordChange = await users.findOne({
       username: req.body.username,
       email: req.body.email
     })
+    // salt rounds to hash new password
     saltRounds = 10
+    // hash the new password
     hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-    console.log(await bcrypt.compare(req.body.password, hashedPassword))
+    // update the user's password
     await userForPasswordChange.updateOne({ password: hashedPassword })
-    res.redirect("/login")
+    // redirect the user to the login page
+    return res.redirect("/login")
   }
   if (req.body.phone) {
-    await users.findOneAndUpdate({
+    //find user with username and email
+    const userForPasswordChange = await users.findOne({
       username: req.body.username,
       phone: req.body.phone
-    }, { password: req.body.password })
+    })
+    // salt rounds to hash new password
+    saltRounds = 10
+    // hash the new password
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+    // update the user's password
+    await userForPasswordChange.updateOne({ password: hashedPassword })
+    // redirect the user to the login page
+    return res.redirect("/login")
   }
 })
