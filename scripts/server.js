@@ -80,12 +80,35 @@ app.post("/signUp", async (req, res) => {
   if (req.body.password == req.body.repeat_password) {
     saltRounds = 10
     hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-    createdUser = await users.create({ username: req.body.username, email: req.body.email, phone: req.body.phone, password: hashedPassword, name: req.body.firstName, lastName: req.body.lastName })
+    const user = new users({ 
+      username: req.body.username, 
+      email: req.body.email, 
+      phone: req.body.phone, 
+      password: hashedPassword, 
+      name: req.body.firstName, 
+      lastName: req.body.lastName 
+    });
+
+    req.session.user = { 
+      username: req.body.username, 
+      email: req.body.email, 
+      phone: req.body.phone 
+    }; // Store user information in session
+
+    createdUser = await users.create({ 
+      username: req.body.username, 
+      email: req.body.email, 
+      phone: req.body.phone, 
+      password: hashedPassword, 
+      name: req.body.firstName, 
+      lastName: req.body.lastName 
+    })
   } else {
     return res.redirect("/signUp?error=passwords_dont_match")
   }
   res.redirect("/login")
 })
+
 
 app.get("/login", (req, res) => {
   res.render("login")
@@ -106,8 +129,12 @@ app.post("/login", async (req, res) => {
         // Check if the entered password is the same as the stored password
         if (result) {
           req.session.authenticated = true // authentication here
+          req.session.user = { 
+            username: user.username, 
+            email: user.email, 
+            phone: user.phone 
+          }; // Store user information in session
           return res.redirect("homePage")
-
         } else {
           res.status(401).send("Invalid password")
         }
@@ -120,6 +147,7 @@ app.post("/login", async (req, res) => {
     return res.status(500).send("Server error page here. Status code 500") // change
   }
 })
+
 
 app.post('/logout', (req, res) => {
   req.session.destroy();
@@ -151,6 +179,7 @@ app.post("/recovery", async (req, res) => {
     //find user with username and email
     const userForRecovery = await users.findOne({
       username: req.body.username,
+      email: req.body.email
     })
     // if the user is found
     if (userForRecovery) {
@@ -218,3 +247,24 @@ app.post("/replacePassword", async (req, res) => {
     return res.redirect("/login")
   }
 })
+
+app.get('/profile', isAuthenticated, (req, res) => {
+
+  if (!req.session.authenticated) {
+    // If the user is not authenticated, redirect them to the home page
+    res.redirect('/login');
+    return;
+  }
+
+  // Get the user's name from the session
+  const userName = req.session.user.username;
+  console.log(userName);
+  const userEmail = req.session.user.email;
+  const userPhone = req.session.user.phone;
+  // const userPhonenumber = req.session.user.phonenumber;
+  res.render('profilePage', { 
+    userName, 
+    userEmail, 
+    userPhone });
+});
+
