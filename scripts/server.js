@@ -85,9 +85,8 @@ app.post("/login", async (req, res) => {
   usersPassword = req.body.password
 
   const user = await users.findOne({
-    name: usersUsername
+    username: usersUsername
   })
-
   if (user) {
     bcrypt.compare(usersPassword, user.password, (err, result) => {
       // authentication here
@@ -117,3 +116,64 @@ function isAuthenticated(req, res, next) {
 app.get('/homePage', isAuthenticated, (req, res) => {
   res.send(`some home page here`);
 });
+
+app.get("/recovery", (req, res) => {
+  res.render("recovery")
+})
+
+app.post("/recovery", async (req, res) => {
+  if (req.body.email) {
+    const userForRecovery = await users.findOne({
+      username: req.body.username,
+      email: req.body.email
+    })
+    if (userForRecovery) {
+      res.render("newPassword", {
+        username: req.body.username,
+        email: req.body.email,
+        phone: "",
+        code: Math.floor(100000 + Math.random() * 900000)
+      })
+    } else {
+      return res.send("User not found")
+    }
+  } else if (req.body.phone) {
+    const userForRecovery = await users.findOne({
+      username: req.body.username,
+      phone: req.body.phone,
+    })
+    if (userForRecovery) {
+      return res.render("newPassword", {
+        username: req.body.username,
+        email: "",
+        phone: user.phone,
+        code: Math.floor(100000 + Math.random() * 900000)
+      })
+    } else {
+      return res.send("User not found")
+    }
+  } else {
+    return res.send("User not found")
+  }
+})
+
+app.post("/replacePassword", async (req, res) => {
+  // find user with username and email or phone
+  if (req.body.email) {
+    const userForPasswordChange = await users.findOne({
+      username: req.body.username,
+      email: req.body.email
+    })
+    saltRounds = 10
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+    console.log(await bcrypt.compare(req.body.password, hashedPassword))
+    await userForPasswordChange.updateOne({ password: hashedPassword })
+    res.redirect("/login")
+  }
+  if (req.body.phone) {
+    await users.findOneAndUpdate({
+      username: req.body.username,
+      phone: req.body.phone
+    }, { password: req.body.password })
+  }
+})
