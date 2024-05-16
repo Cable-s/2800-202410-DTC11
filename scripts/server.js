@@ -65,9 +65,11 @@ app.use(
   })
 );
 
+app.use(express.static("public"))
+
 // change this to the homepage
 app.get("/", (req, res) => {
-  res.redirect("/signUp")
+  res.render("index")
 })
 
 app.get("/signUp", (req, res) => {
@@ -109,6 +111,9 @@ app.post("/signUp", async (req, res) => {
   res.redirect("/login")
 })
 
+// app.get("/index", (req, res) => {
+//   res.render("index")
+// })
 
 app.get("/login", (req, res) => {
   res.render("login")
