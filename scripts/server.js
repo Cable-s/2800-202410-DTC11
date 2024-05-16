@@ -52,42 +52,50 @@ app.use(
 );
 
 // change this to the homepage
-app.get("/", (req, res)=>{
+app.get("/", (req, res) => {
   res.redirect("/signUp")
 })
 
-app.get("/signUp", (req, res) =>{
+app.get("/signUp", (req, res) => {
   res.render("signUp")
 })
 
-app.post("/signUp", async (req, res)=>{
+app.post("/signUp", async (req, res) => {
   saltRounds = 10
   hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
-  createdUser = await users.create({email: req.body.email, name: req.body.username, password: hashedPassword})
+  createdUser = await users.create({ email: req.body.email, name: req.body.username, password: hashedPassword })
 
+  req.session.user = { email: req.body.email, name: req.body.username }; // Store user information in session
+
+  userEmail = req.body.email
+  console.log(userEmail)
   res.redirect("/login")
 })
 
-app.get("/login", (req, res)=>{
+app.get("/login", (req, res) => {
   res.render("login")
 })
 
-app.post("/login", async (req, res)=>{
+app.post("/login", async (req, res) => {
   usersUsername = req.body.username
   usersPassword = req.body.password
 
+  userEmail = req.body.email
+  userPhone = req.body.phone
+  console.log(userPhone)
   const user = await users.findOne({
     name: usersUsername
   })
 
-  if(user) {
-    bcrypt.compare(usersPassword, user.password, (err, result) =>{
+  if (user) {
+    bcrypt.compare(usersPassword, user.password, (err, result) => {
       // authentication here
+      req.session.user = { email: req.body.email, name: usersUsername }
       req.session.authenticated = true
       console.log("passwords are the same!")
       return res.redirect("homePage")
     })
-  } else{
+  } else {
     return res.send("Not authenticated page here").status(401)
   }
 })
@@ -109,3 +117,20 @@ function isAuthenticated(req, res, next) {
 app.get('/homePage', isAuthenticated, (req, res) => {
   res.send('some home page here');
 });
+
+app.get('/profile', isAuthenticated, (req, res) => {
+
+  if (!req.session.authenticated) {
+    // If the user is not authenticated, redirect them to the home page
+    res.redirect('/login');
+    return;
+  }
+
+  // Get the user's name from the session
+  const userName = req.session.user.username;
+  const userEmail = req.session.user.email;
+  const userPhone = req.session.user.phone;
+  // const userPhonenumber = req.session.user.phonenumber;
+  res.render('profilePage', { userName, userEmail, userPhone });
+});
+
