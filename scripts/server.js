@@ -154,15 +154,22 @@ app.post("/recovery", async (req, res) => {
     })
     // if the user is found
     if (userForRecovery) {
-      // render the new password page and send username, email, phone and a random code that will be sent to the user's email for verification
+      // generate a random code
       let randomCode = Math.floor(100000 + Math.random() * 900000)
+      // send the email
       await transporter.sendMail({
-        from: '"Harmonia" <harmonia2800@gmail.com>', // sender address
-        to: req.body.email, // list of receivers
-        subject: "password recovery", // Subject line
-        text: `Your recovery code is ${randomCode}`, // plain text body
-        html: `<p>Your recovery code is <b>${randomCode}</b></p>` // html body
+        // from harmonia gmail account
+        from: '"Harmonia" <harmonia2800@gmail.com>',
+        //to user email
+        to: req.body.email,
+        // subject line
+        subject: "password recovery",
+        //plain text body
+        text: `Your recovery code is ${randomCode}`,
+        // html body
+        html: `<p>Your recovery code is <b>${randomCode}</b></p>`
       });
+      //render newPassword page and send info to change password
       res.render("newPassword", {
         username: req.body.username,
         email: req.body.email,
