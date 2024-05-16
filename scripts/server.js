@@ -81,20 +81,20 @@ app.get("/login", (req, res) => {
 })
 
 app.post("/login", async (req, res) => {
-<<<<<<< HEAD
-  usersEmail = req.body.email
+  usersUsername = req.body.username
   usersPassword = req.body.password
 
   // Check if the email is in the database
   try {
     const user = await users.findOne({
-      email: usersEmail
+      username: usersUsername
     })
 
     if (user) {
-      const matchedValue = await bcrypt.compare(usersPassword, user.password, (err, result) => {
+      console.log(await bcrypt.compare(usersPassword, user.password))
+      await bcrypt.compare(usersPassword, user.password, (err, result) => {
         // Check if the entered password is the same as the stored password
-        if (matchedValue) {
+        if (result) {
           req.session.authenticated = true // authentication here
           return res.redirect("homePage")
 
@@ -108,23 +108,6 @@ app.post("/login", async (req, res) => {
   }
   catch (err) {
     return res.status(500).send("Server error page here. Status code 500") // change
-=======
-  usersUsername = req.body.username
-  usersPassword = req.body.password
-
-  const user = await users.findOne({
-    username: usersUsername
-  })
-  if (user) {
-    bcrypt.compare(usersPassword, user.password, (err, result) => {
-      // authentication here
-      req.session.authenticated = true
-      console.log("passwords are the same!")
-      return res.redirect("homePage")
-    })
-  } else {
-    return res.send("Not authenticated page here").status(401)
->>>>>>> PasswordReset
   }
 })
 
