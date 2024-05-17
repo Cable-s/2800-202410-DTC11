@@ -167,9 +167,14 @@ function isAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-// now a protected route route
-app.get('/homePage', isAuthenticated, (req, res) => {
-  res.send(`some home page here`);
+// Home page
+app.get('/home', isAuthenticated, (req, res) => {
+  res.render('home');
+});
+
+// Room list page
+app.get('/roomList', isAuthenticated, (req, res) => {
+  res.render('roomList');
 });
 
 // the password recovery route
