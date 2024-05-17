@@ -69,34 +69,36 @@ app.use(
   })
 );
 
+app.use(express.static("public"))
+
 // change this to the homepage
 app.get("/", (req, res) => {
-  res.redirect("/signUp");
-});
+  res.render("index.ejs")
+})
 
 app.get("/signUp", (req, res) => {
-  res.render("signUp", {
-    error: req.query.error,
-  });
-});
+  res.render("signUp.ejs", {
+    error: req.query.error
+  })
+})
 
 app.post("/signUp", async (req, res) => {
   if (req.body.password == req.body.repeat_password) {
-    saltRounds = 10;
-    hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+    saltRounds = 10
+    hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
     const user = new users({
       username: req.body.username,
       email: req.body.email,
       phone: req.body.phone,
       password: hashedPassword,
       name: req.body.firstName,
-      lastName: req.body.lastName,
+      lastName: req.body.lastName
     });
 
     req.session.user = {
       username: req.body.username,
       email: req.body.email,
-      phone: req.body.phone,
+      phone: req.body.phone
     }; // Store user information in session
 
     createdUser = await users.create({
@@ -105,17 +107,21 @@ app.post("/signUp", async (req, res) => {
       phone: req.body.phone,
       password: hashedPassword,
       name: req.body.firstName,
-      lastName: req.body.lastName,
-    });
+      lastName: req.body.lastName
+    })
   } else {
     return res.redirect("/signUp?error=passwords_dont_match");
   }
-  res.redirect("/login");
-});
+  res.redirect("/login")
+})
+
+// app.get("/index", (req, res) => {
+//   res.render("index")
+// })
 
 app.get("/login", (req, res) => {
-  res.render("login");
-});
+  res.render("login.ejs")
+})
 
 app.post("/login", async (req, res) => {
   usersUsername = req.body.username;
@@ -131,13 +137,13 @@ app.post("/login", async (req, res) => {
       await bcrypt.compare(usersPassword, user.password, (err, result) => {
         // Check if the entered password is the same as the stored password
         if (result) {
-          req.session.authenticated = true; // authentication here
+          req.session.authenticated = true // authentication here
           req.session.user = {
             username: user.username,
             email: user.email,
-            phone: user.phone,
+            phone: user.phone
           }; // Store user information in session
-          return res.redirect("homePage");
+          return res.redirect("/home")
         } else {
           res.status(401).send("Invalid password");
         }
@@ -163,91 +169,76 @@ function isAuthenticated(req, res, next) {
   res.redirect("/login");
 }
 
-// now a protected route route
-app.get("/homePage", isAuthenticated, (req, res) => {
-  res.send(`some home page here`);
+// Home page
+app.get('/home', isAuthenticated, (req, res) => {
+  res.render('home');
+});
+
+// Room list page
+app.get('/roomList', isAuthenticated, (req, res) => {
+  res.render('roomList');
 });
 
 // the password recovery route
 app.get("/recovery", (req, res) => {
-  res.render("recovery");
-});
+  res.render("recovery.ejs")
+})
 
 // the password recovery form post route
 app.post("/recovery", async (req, res) => {
   // if the user is using email to recover
-  if (req.body.email) {
-    //find user with username and email
-    const userForRecovery = await users.findOne({
-      username: req.body.username,
-      email: req.body.email,
+  //find user with username and email
+  const userForRecovery = await users.findOne({
+    username: req.body.username,
+  })
+  // if the user is found
+  if (userForRecovery) {
+    // generate a random code
+    let randomCode = Math.floor(100000 + Math.random() * 900000)
+    // send the email
+    await transporter.sendMail({
+      // from harmonia gmail account
+      from: '"Harmonia" <harmonia2800@gmail.com>',
+      //to user email
+      to: userForRecovery.email,
+      // subject line
+      subject: "password recovery",
+      //plain text body
+      text: `Your recovery code is ${randomCode}`,
+      // html body
+      html: `<p>Your recovery code is <b>${randomCode}</b></p>`
     });
-    // if the user is found
-    if (userForRecovery) {
-      // generate a random code
-      let randomCode = Math.floor(100000 + Math.random() * 900000);
-      // send the email
-      await transporter.sendMail({
-        // from harmonia gmail account
-        from: '"Harmonia" <harmonia2800@gmail.com>',
-        //to user email
-        to: req.body.email,
-        // subject line
-        subject: "password recovery",
-        //plain text body
-        text: `Your recovery code is ${randomCode}`,
-        // html body
-        html: `<p>Your recovery code is <b>${randomCode}</b></p>`,
-      });
-      //render newPassword page and send info to change password
-      res.render("newPassword", {
-        username: req.body.username,
-        email: req.body.email,
-        phone: "",
-        code: randomCode,
-      });
-      //if no user is found
-    } else {
-      // send a message to the user
-      return res.send("User not found");
-    }
+    //render newPassword page and send info to change password
+    res.render("newPassword", {
+      username: req.body.username,
+      email: userForRecovery.email,
+      phone: "",
+      code: randomCode
+    })
+    //if no user is found
+  } else {
+    // send a message to the user
+    return res.send("User not found")
   }
 });
 
 // the password recovery form post route
 app.post("/replacePassword", async (req, res) => {
   // if the user is using email to recover
-  if (req.body.email) {
-    //find user with username and email
-    const userForPasswordChange = await users.findOne({
-      username: req.body.username,
-      email: req.body.email,
-    });
-    // salt rounds to hash new password
-    saltRounds = 10;
-    // hash the new password
-    hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-    // update the user's password
-    await userForPasswordChange.updateOne({ password: hashedPassword });
-    // redirect the user to the login page
-    return res.redirect("/login");
-  }
-  if (req.body.phone) {
-    //find user with username and email
-    const userForPasswordChange = await users.findOne({
-      username: req.body.username,
-      phone: req.body.phone,
-    });
-    // salt rounds to hash new password
-    saltRounds = 10;
-    // hash the new password
-    hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-    // update the user's password
-    await userForPasswordChange.updateOne({ password: hashedPassword });
-    // redirect the user to the login page
-    return res.redirect("/login");
-  }
-});
+  //find user with username and email
+  const userForPasswordChange = await users.findOne({
+    username: req.body.username,
+  })
+  // salt rounds to hash new password
+  saltRounds = 10
+  // hash the new password
+  hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+  // update the user's password
+  await userForPasswordChange.updateOne({ password: hashedPassword })
+  // redirect the user to the login page
+  return res.redirect("/login")
+
+})
 
 app.get("/profile", isAuthenticated, (req, res) => {
   if (!req.session.authenticated) {
@@ -262,22 +253,29 @@ app.get("/profile", isAuthenticated, (req, res) => {
   const userEmail = req.session.user.email;
   const userPhone = req.session.user.phone;
   // const userPhonenumber = req.session.user.phonenumber;
-  res.render("profilePage", {
+  res.render('profilePage.ejs', {
     userName,
     userEmail,
-    userPhone,
+    userPhone
   });
 });
 
-allUsersMessages = [];
-
-// add isauthenticated
-app.post("/sendMessage", (req, res) => {
-  allUsersMessages.push(req.body.message);
-  res.redirect("/harmonia-dm");
+app.get("/roomListPage", isAuthenticated, (req, res) => {
+  res.render("roomList.ejs");
 });
 
-app.get("/harmonia-dm", (req, res) => {
-  // add isauthenticated
-  res.render("chatbot", { allUsersMessages: allUsersMessages });
+app.get("/devicesPage", isAuthenticated, (req, res) => {
+  res.render("devicesPage.ejs");
+});
+
+app.get("/deviceRoutines", isAuthenticated, (req, res) => {
+  res.render("deviceRoutines.ejs");
+});
+
+app.get("/editRoutines", isAuthenticated, (req, res) => {
+  res.render("editRoutines.ejs");
+});
+
+app.get("/chatBot", isAuthenticated, (req, res) => {
+  res.render("chatBot.ejs");
 });

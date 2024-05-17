@@ -1,5 +1,4 @@
-<html>
-
+<%- include("top_navbar.ejs") %>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +25,7 @@
 <body class="text-accent bg-background">
     <nav id="navbarPlaceholder"></nav>
 
-    <section class="mt-4 mx-3">
+    <section class="mt-20 mx-3">
         <div class="flex justify-between text-2xl flex-row">
             <div class="flex flex-row">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-circle" width="70" height="70" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -46,7 +45,7 @@
         </div>
         <div class="flex justify-between pl-2">
             <div>
-                <div class="text-2xl">
+                <div class="text-2xl mt-2">
                     User Info
                 </div>
                 <div class="flex flex-col py-4 text-xl">
@@ -161,4 +160,4 @@
     <nav id="footerPlaceholder"></nav>
 </body>
 
-</html>
+<%- include("bottom_navbar.ejs") %>
