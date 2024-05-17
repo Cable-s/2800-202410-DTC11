@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
+  <!-- firebase CDNs -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+  <!-- our own scripts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#2D2B32',
+                    secondary: '#B2EBF2',
+                    background: '#222229',
+                    accent: 'white'
+                }
+            }
+        }
+    }
+    </script>
+  <script src="./scripts/firebaseAPI_DTC11.js"></script>
+</head>
+
+<body class="bg-background">
+    <%- include("top_navbar.ejs") %>
+    <div class="text-accent mt-2 mx-3">
+        <div class="flex justify-between items-center text-2xl pt-4">
+            _____ Devices Page
+            <div><button class="bg-primary p-2 rounded-full border-secondary border-2 shadow-secondary shadow-lg hover:bg-secondary hover:text-primary">Save</button></div>
+        </div>
+    </div>
+    <!-- Use this block of code for the selected item -->
+    <section class="flex flex-col text-accent mt-2 mx-3 mt-8 gap-4">
+        <div class="flex justify-between items-center bg-primary p-4 text-2xl rounded-xl">
+            <div>Device 1</div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-check" width="50" height="50" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                    <path d="M9 12l2 2l4 -4" />
+                </svg>
+            </div>
+        </div>
+    <!-- END -->
+
+    <!-- Use this block of code as a template for non selected items  -->
+        <div class="flex justify-between items-center bg-primary p-4 text-2xl rounded-xl">
+            <div>Device 1</div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-plus" width="50" height="50" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                    <path d="M9 12h6" />
+                    <path d="M12 9v6" />
+                </svg>
+            </div>
+        </div>
+    </section>
+</body>
+
+<%- include("bottom_navbar.ejs") %>
