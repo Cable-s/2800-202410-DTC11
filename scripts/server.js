@@ -266,3 +266,11 @@ app.get("/roomListPage", isAuthenticated, (req, res) => {
 app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
 });
+
+app.get("/deviceRoutines", isAuthenticated, (req, res) => {
+  res.render("deviceRoutines.ejs");
+});
+
+app.get("/editRoutines", isAuthenticated, (req, res) => {
+  res.render("deviceRoutines.ejs");
+});
