@@ -139,7 +139,7 @@ app.post("/login", async (req, res) => {
             email: user.email,
             phone: user.phone
           }; // Store user information in session
-          return res.redirect("/homePage")
+          return res.redirect("/home")
         } else {
           res.status(401).send("Invalid password")
         }
