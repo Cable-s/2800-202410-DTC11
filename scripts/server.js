@@ -247,7 +247,7 @@ app.get('/profile', isAuthenticated, (req, res) => {
   const userEmail = req.session.user.email;
   const userPhone = req.session.user.phone;
   // const userPhonenumber = req.session.user.phonenumber;
-  res.render('profilePage', {
+  res.render('profilePage.ejs', {
     userName,
     userEmail,
     userPhone
