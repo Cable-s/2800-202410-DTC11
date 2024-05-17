@@ -272,5 +272,5 @@ app.get("/deviceRoutines", isAuthenticated, (req, res) => {
 });
 
 app.get("/editRoutines", isAuthenticated, (req, res) => {
-  res.render("deviceRoutines.ejs");
+  res.render("editRoutines.ejs");
 });
