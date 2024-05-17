@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Routine</title>
+    <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D2B32',
+                        secondary: '#B2EBF2',
+                        background: '#222229',
+                        accent: 'white'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .selected {
+            background-color: #B2EBF2;
+            color: #2D2B32;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-accent">
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 max-w-lg bg-primary rounded-lg shadow-lg">
+        <!-- Title of Page -->
+        <div class="flex items-center justify-center p-4 bg-primary text-secondary rounded-t-lg">
+            <h1 class="text-lg font-semibold">Edit Routine</h1>
+        </div>
+        <!-- Form -->
+        <div class="p-4">
+            <!-- Rename -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-secondary">Rename:</label>
+                <input type="text"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-secondary sm:text-sm bg-white text-black"
+                    placeholder="placeholder for routine name in db">
+            </div>
+            <!-- Start Time and End Time -->
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-secondary">Start Time</label>
+                    <input type="time"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-secondary sm:text-sm text-black">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-secondary">End Time</label>
+                    <input type="time"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-secondary sm:text-sm text-black">
+                </div>
+            </div>
+            <!-- Date -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-secondary">Select Date</label>
+                <div class="flex justify-between mt-2">
+                    <button id="mon"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Mon</button>
+                    <button id="tue"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Tue</button>
+                    <button id="wed"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Wed</button>
+                    <button id="thu"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Thu</button>
+                    <button id="fri"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Fri</button>
+                    <button id="sat"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Sat</button>
+                    <button id="sun"
+                        class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Sun</button>
+                </div>
+            </div>
+            <!-- Add Device -->
+            <div class="mb-4">
+                <button
+                    class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary">
+                    + Add Device
+                </button>
+            </div>
+            <!-- Device -->
+            <div class="flex items-center justify-between p-3 border border-gray-500 rounded-md">
+                <span class="text-secondary">Device 1</span>
+                <div class="flex items-center space-x-2">
+                    <!-- Toggle Switch -->
+                    <label for="toggle1" class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input id="toggle1" type="checkbox" class="sr-only">
+                            <div class="block bg-gray-600 w-10 h-6 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+                        </div>
+                    </label>
+                    <button class="bg-secondary text-primary px-4 py-1 rounded-full">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.date-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.classList.toggle('selected');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
