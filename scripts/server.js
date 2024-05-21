@@ -271,6 +271,10 @@ app.get("/deviceRoutines", isAuthenticated, (req, res) => {
   res.render("deviceRoutines.ejs");
 });
 
+app.get("/createRoutine", isAuthenticated, (req, res) => {
+  res.render("createRoutine.ejs");
+});
+
 app.get("/editRoutines", isAuthenticated, (req, res) => {
   res.render("editRoutines.ejs");
 });
