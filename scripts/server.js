@@ -7,6 +7,7 @@ const { Db } = require("mongodb");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const nodemailer = require("nodemailer");
+const path = require("path")
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -275,9 +276,21 @@ app.get("/editRoutines", isAuthenticated, (req, res) => {
   res.render("editRoutines.ejs");
 });
 
+// allUsersMessages = [];
+// app.get("/harmonia-dm", isAuthenticated, (req, res) => {
+//   res.render("chatbot.ejs", { allUsersMessages: allUsersMessages });
+// });
+
+// app.post("/sendMessage", isAuthenticated, (req, res) => {
+//   allUsersMessages.push(req.body.message);
+//   res.redirect("/harmonia-dm");
+// });
+
+
 allUsersMessages = [];
 app.get("/harmonia-dm", isAuthenticated, (req, res) => {
-  res.render("chatbot.ejs", { allUsersMessages: allUsersMessages });
+  chatBotPath = path.join(__dirname, '..', 'views', 'chatBot.html');
+  res.sendFile(chatBotPath)
 });
 
 app.post("/sendMessage", isAuthenticated, (req, res) => {
