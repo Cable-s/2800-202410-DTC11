@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="icon" type="image/x-icon" href="/images/app_logo.png">
+  <!-- firebase CDNs -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+  <!-- our own scripts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#2D2B32',
+                    secondary: '#B2EBF2',
+                    background: '#222229',
+                    accent: 'white'
+                }
+            }
+        }
+    }
+    </script>
+  <script src="./scripts/firebaseAPI_DTC11.js"></script>
+</head>
+
+<%- include("top_navbar.ejs") %>
+<body class="bg-background mt-20">
+    <div class="border-b border-gray-700 bg-primary px-4 py-5 mb-8 sm:px-6 rounded-lg">
+        <div class="flex items-center justify-center">
+            <div class="mt-2">
+                <h3 class="text-2xl font-semibold leading-6 text-secondary text-center">Connected Rooms</h3>
+            </div>
+        </div>
+    </div>
+    <!-- Use this block of code for the selected item -->
+    <section class="flex flex-col text-accent mt-2 mx-3 mt-8 gap-4">
+        <div class="flex justify-between items-center bg-primary p-4 text-2xl rounded-xl">
+            <div>Room 1</div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-rounded-chevron-right" width="50" height="50" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M11 9l3 3l-3 3" />
+                    <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
+                  </svg>
+            </div>
+        </div>
+    <!-- END -->
+
+    <!-- Use this block of code as a template for non selected items  -->
+        <div class="flex justify-between items-center bg-primary p-4 text-2xl rounded-xl">
+            <div>Room 2</div>
+            <div">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-square-rounded-chevron-right" width="50" height="50" viewBox="0 0 24 24" stroke-width="1.5" stroke="#B2EBF2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M11 9l3 3l-3 3" />
+                    <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
+                  </svg>
+            </div>
+        </div>
+    </section>
+</body>
+
+<%- include("bottom_navbar.ejs") %>

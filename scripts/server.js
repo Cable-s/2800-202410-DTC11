@@ -259,6 +259,9 @@ app.get("/profile", isAuthenticated, (req, res) => {
   });
 });
 
+app.get("/connectedRooms", isAuthenticated, (req, res) => {
+  res.render("connectedRooms.ejs");
+});
 
 app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
