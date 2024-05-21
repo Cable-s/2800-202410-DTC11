@@ -48,7 +48,13 @@ const userSchema = new mongoose.Schema({
 });
 
 const deviceSchema = new mongoose.Schema({
-  name: String,
+  category: String,
+  deviceFunctions: Object,
+  deviceName: String,
+  room: String,
+  routineId: String,
+  userId: mongoose.Schema.Types.ObjectId,
+  activeness: String
 });
 
 const users = mongoose.model("2800users", userSchema);
@@ -175,8 +181,31 @@ app.get("/home", isAuthenticated, (req, res) => {
 });
 
 // Room list page
-app.get("/roomList", isAuthenticated, (req, res) => {
-  res.render("roomList");
+app.get('/roomList', isAuthenticated, async (req, res) => {
+  try {
+    const username = req.session.user.username; // Get the username from the session
+
+    if (!username) {
+      throw new Error('Username not found in session');
+    }
+
+    // Fetch devices that match the logged-in user's username
+    const userDevices = await devices.find({ username });
+
+    // Organize devices by room
+    const devicesByRoom = userDevices.reduce((acc, device) => {
+      if (!acc[device.room]) {
+        acc[device.room] = [];
+      }
+      acc[device.room].push(device);
+      return acc;
+    }, {});
+
+    res.render('roomList', { devicesByRoom });
+  } catch (err) {
+    console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
 });
 
 // the password recovery route
