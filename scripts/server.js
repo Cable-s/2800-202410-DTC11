@@ -8,10 +8,14 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const nodemailer = require("nodemailer");
 const path = require("path")
+const bodyParser = require('body-parser');
+const { setUpGPT, sendAndReceiveMessage } = require("./gptScript.js");
+
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.use(bodyParser.json()); // for the /sendMessage endpoint
 
 main().catch((err) => console.log(err));
 
@@ -280,24 +284,22 @@ app.get("/editRoutines", isAuthenticated, (req, res) => {
   res.render("editRoutines.ejs");
 });
 
-// allUsersMessages = [];
-// app.get("/harmonia-dm", isAuthenticated, (req, res) => {
-//   res.render("chatbot.ejs", { allUsersMessages: allUsersMessages });
-// });
 
-// app.post("/sendMessage", isAuthenticated, (req, res) => {
-//   allUsersMessages.push(req.body.message);
-//   res.redirect("/harmonia-dm");
-// });
-
-
-allUsersMessages = [];
 app.get("/harmonia-dm", isAuthenticated, (req, res) => {
   chatBotPath = path.join(__dirname, '..', 'views', 'chatBot.html');
   res.sendFile(chatBotPath)
 });
 
-app.post("/sendMessage", isAuthenticated, (req, res) => {
-  allUsersMessages.push(req.body.message);
-  res.redirect("/harmonia-dm");
+app.post("/sendMessage", isAuthenticated, async (req, res) => {
+  message = req.body.message
+
+  let assistant, thread
+
+  if (!assistant && !thread){ // thread not working
+    [assistant, thread] = await setUpGPT()
+  }
+  console.log(thread.id)
+  gptResponse = await sendAndReceiveMessage(assistant, thread, message)
+
+  res.json(gptResponse)
 });

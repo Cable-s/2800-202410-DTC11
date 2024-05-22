@@ -7,6 +7,8 @@
 
     <!-- our own scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <script>
       tailwind.config = {
         theme: {
@@ -66,7 +68,7 @@
                 <div class="grid grid-cols-12 gap-y-2" id="messages-here">
 
                   <!-- Start of chatbot message -->
-                  <div class="col-start-1 col-end-8 p-3 rounded-lg">
+                  <div class="col-start-1 col-end-8 p-3 rounded-lg" id="ai-message-template" hidden>
                     <div class="flex flex-row items-center">
                       <div
                         class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
@@ -74,9 +76,8 @@
                         A
                       </div>
                       <div
-                        class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                        class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl" id="ai-message-here"
                       >
-                        <div>Hi, I am Harmonia! Let me know how I can assist you with creating routines!</div>
                       </div>
                     </div>
                   </div>
