@@ -309,7 +309,7 @@ app.get("/admin", isAuthenticated, (req, res) => {
 });
 
 app.post("/admin", isAuthenticated, async (req, res) => {
-  res.send("awesome")
+  res.render("foundit.ejs")
 })
 
 app.get("*", (req, res) => {
