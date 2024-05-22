@@ -177,31 +177,71 @@ function isAuthenticated(req, res, next) {
 
 // Home page
 app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home");
+  res.render("home.ejs");
 });
 
-// Room list page
+app.use('/scripts', express.static('scripts'));
+
 app.get('/roomList', isAuthenticated, async (req, res) => {
   try {
-    const username = req.session.user.username; // Get the username from the session
+    // Get the username from the session
+    const username = req.session.user.username;
 
+    // Check if the username is not found in the session
     if (!username) {
       throw new Error('Username not found in session');
     }
 
-    // Fetch devices that match the logged-in user's username
-    const userDevices = await devices.find({ username });
+    // Default to 'room' when enter the roomList page
+    const { classifyBy = 'room' } = req.query;
+    let filter = { username };
 
-    // Organize devices by room
-    const devicesByRoom = userDevices.reduce((acc, device) => {
-      if (!acc[device.room]) {
-        acc[device.room] = [];
-      }
-      acc[device.room].push(device);
-      return acc;
-    }, {});
+    // Find user's devices from the database
+    const userDevices = await devices.find(filter);
 
-    res.render('roomList', { devicesByRoom });
+    // Store devices by room or category or activeness
+    let devicesByCategory = {};
+
+    // CHeck if the classifyBy is set to 'category'
+    if (classifyBy === 'category') {
+      // Group devices by category using .reduce()
+      devicesByCategory = userDevices.reduce((acc, device) => {
+        // if the category is not in the accumulator, make it empty
+        if (!acc[device.category]) {
+          acc[device.category] = [];
+        }
+        // Push the device to the category
+        acc[device.category].push(device);
+        return acc;
+      }, {});
+      // Render the roomList page with classiried devices by category
+      res.render('roomList', { devicesByCategory, classifyBy });
+      // Check if the classifyBy is set to 'activeness'
+    } else if (classifyBy === 'activeness') {
+      // Group devices by status using .reduce()
+      devicesByCategory = userDevices.reduce((acc, device) => {
+        if (!acc[device.activeness]) {
+          // if the activeness is not in the accumulator, make it empty
+          acc[device.activeness] = [];
+        }
+        // Push device to the activeness
+        acc[device.activeness].push(device);
+        return acc;
+      }, {});
+      res.render('roomList', { devicesByCategory, classifyBy });
+      // Else, group devices by room
+    } else {
+      // Group devices by room using .reduce()
+      const devicesByRoom = userDevices.reduce((acc, device) => {
+        if (!acc[device.room]) {
+          acc[device.room] = [];
+        }
+        acc[device.room].push(device);
+        return acc;
+      }, {});
+      res.render('roomList', { devicesByRoom, classifyBy: 'room' });
+    }
+    // Catch errors
   } catch (err) {
     console.error('Error fetching devices:', err);
     res.status(500).send('Server error');
