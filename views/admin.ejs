@@ -8,10 +8,12 @@
   <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
       <div class="mx-auto max-w-screen-sm text-center">
         <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500">ARE YOU SUPPOSED TO BE</h1>
-        <div>
-          <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500 z-50"> HERE?</h1>  
+        <div class="relative z-50 bg-background mx-auto">
+          <div id="draggable" class="absolute z-50 bg-background mx-auto">
+            <h1 class="mb-4 z-50 bg-background text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500"> HERE?</h1>  
+          </div>
         </div>
-        <img src="https://c.tenor.com/CytSiBKu_a4AAAAd/tenor.gif" class="relative mx-auto z-0 w-[40px] top-[-70px] lg:w-[70px] lg:top-[-110px]">
+        <img src="https://c.tenor.com/CytSiBKu_a4AAAAd/tenor.gif" class="relative mx-auto z-0 w-[40px] top-[0px] lg:w-[70px] lg:top-[0px]">
       </div>   
   </div>
 </section>
@@ -19,13 +21,52 @@
 
 
 
-
-
-
-
-
-
-
+<!-- this script tag is brought to you by https://www.w3schools.com/howto/howto_js_draggable.asp -->
+<script>
+  //Make the DIV element draggagle:
+  dragElement(document.getElementById("draggable"));
+  
+  function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById(elmnt.id)) {
+      /* if present, the header is where you move the DIV from:*/
+      document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+    } else {
+      /* otherwise, move the DIV from anywhere inside the DIV:*/
+      elmnt.onmousedown = dragMouseDown;
+    }
+  
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      // set the element's new position:
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+  
+    function closeDragElement() {
+      /* stop moving when mouse button is released:*/
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+</script>
 
 
 <%- include("bottom_navbar.ejs") %>
