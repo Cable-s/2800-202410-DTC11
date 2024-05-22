@@ -9,14 +9,17 @@
       <div class="mx-auto max-w-screen-sm text-center">
         <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500">ARE YOU SUPPOSED TO BE</h1>
         <div class="relative z-50 bg-background mx-auto">
-          <div id="draggable" class="absolute z-50 bg-background mx-auto">
+          <div id="draggable" class="absolute inset-0 z-50 bg-background mx-auto">
             <h1 class="mb-4 z-50 bg-background text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500"> HERE?</h1>  
           </div>
         </div>
-        <img src="https://c.tenor.com/CytSiBKu_a4AAAAd/tenor.gif" class="relative mx-auto z-0 w-[40px] top-[0px] lg:w-[70px] lg:top-[0px]">
+        <img onclick="document.getElementById('foundIt').click()" src="https://i.pinimg.com/564x/fc/e2/74/fce2740d6f3fe82e8d934d1d67169a4b.jpg" class="relative mx-auto z-0 w-[70px] top-[0px] lg:w-[100px] lg:top-[0px]">
       </div>   
   </div>
 </section>
+<form action="/admin" method="post" class="hidden">
+<button class="hidden" id="foundIt" type="submit"></button>
+</form>
 </body>
 
 
