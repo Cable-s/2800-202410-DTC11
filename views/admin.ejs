@@ -23,7 +23,6 @@
 </body>
 
 
-
 <!-- this script tag is brought to you by https://www.w3schools.com/howto/howto_js_draggable.asp -->
 <script>
   //Make the DIV element draggagle:
@@ -67,6 +66,51 @@
       /* stop moving when mouse button is released:*/
       document.onmouseup = null;
       document.onmousemove = null;
+    }
+  }
+
+
+
+
+
+  ontouchmoveElement(document.getElementById("draggable"));
+  function ontouchmoveElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById(elmnt.id)) {
+      /* if present, the header is where you move the DIV from:*/
+      document.getElementById(elmnt.id).ontouchstart = ontouchmoveMobile;
+    } else {
+      /* otherwise, move the DIV from anywhere inside the DIV:*/
+      elmnt.ontouchstart = ontouchmoveMobile;
+    }
+  
+    function ontouchmoveMobile(e) {
+      e = e || window.event;
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.ontouchend = closeDragElementMobile;
+      // call a function whenever the cursor moves:
+      document.ontouchmove = elementDragMoblie;
+    }
+  
+    function elementDragMoblie(e) {
+      e = e || window.event;
+      // calculate the new cursor position:
+      console.log(e.changedTouches[0].clientX)
+      pos1 = pos3 - e.changedTouches[0].clientX;
+      pos2 = pos4 - e.changedTouches[0].clientY;
+      pos3 = e.changedTouches[0].clientX;
+      pos4 = e.changedTouches[0].clientY;
+      // set the element's new position:
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+  
+    function closeDragElementMobile() {
+      /* stop moving when mouse button is released:*/
+      document.ontouchend = null;
+      document.ontouchstart = null;
     }
   }
 </script>
