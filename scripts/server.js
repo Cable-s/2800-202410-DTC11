@@ -284,6 +284,17 @@ app.get("/editRoutines", isAuthenticated, (req, res) => {
   res.render("editRoutines.ejs");
 });
 
+app.get("/deviceInfo", isAuthenticated, (req, res) => {
+  res.render("deviceInfo.ejs");
+});
+
+app.get("/createFunction", isAuthenticated, (req, res) => {
+  res.render("createFunction.ejs");
+});
+
+app.get("/editFunction", isAuthenticated, (req, res) => {
+  res.render("editFunction.ejs");
+});
 
 app.get("/harmonia-dm", isAuthenticated, (req, res) => {
   chatBotPath = path.join(__dirname, '..', 'views', 'chatBot.html');
