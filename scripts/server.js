@@ -305,5 +305,5 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.send("404 Page not found")
+  res.render("404.ejs")
 })
