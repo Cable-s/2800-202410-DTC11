@@ -290,15 +290,14 @@ app.get("/harmonia-dm", isAuthenticated, (req, res) => {
   res.sendFile(chatBotPath)
 });
 
+let assistant, thread
+
 app.post("/sendMessage", isAuthenticated, async (req, res) => {
   message = req.body.message
 
-  let assistant, thread
-
-  if (!assistant && !thread) { // thread not working
+  if (!assistant && !thread) {
     [assistant, thread] = await setUpGPT()
-  }
-  console.log(thread.id)
+  } 
   gptResponse = await sendAndReceiveMessage(assistant, thread, message)
 
   res.json(gptResponse)
