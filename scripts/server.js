@@ -295,7 +295,7 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
 
   let assistant, thread
 
-  if (!assistant && !thread){ // thread not working
+  if (!assistant && !thread) { // thread not working
     [assistant, thread] = await setUpGPT()
   }
   console.log(thread.id)
@@ -303,3 +303,7 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
 
   res.json(gptResponse)
 });
+
+app.get("*", (req, res) => {
+  res.send("404 Page not found")
+})
