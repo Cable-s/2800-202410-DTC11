@@ -1,0 +1,119 @@
+<%- include("top_navbar.ejs") %>
+<br><br><br><br>
+<body class="bg-background">
+
+
+
+<section class="">
+  <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+      <div class="mx-auto max-w-screen-sm text-center">
+        <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500">ARE YOU SUPPOSED TO BE</h1>
+        <div class="relative z-50 bg-background mx-auto">
+          <div id="draggable" class="absolute inset-0 z-50 bg-background mx-auto">
+            <h1 class="mb-4 z-50 bg-background text-7xl tracking-tight font-extrabold lg:text-9xl text-white dark:text-primary-500"> HERE?</h1>  
+          </div>
+        </div>
+        <img onclick="document.getElementById('foundIt').click()" src="https://i.pinimg.com/564x/fc/e2/74/fce2740d6f3fe82e8d934d1d67169a4b.jpg" class="relative mx-auto z-0 w-[70px] top-[0px] lg:w-[100px] lg:top-[0px]">
+      </div>   
+  </div>
+</section>
+<form action="/admin" method="post" class="hidden">
+<button class="hidden" id="foundIt" type="submit"></button>
+</form>
+</body>
+
+
+<!-- this script tag is brought to you by https://www.w3schools.com/howto/howto_js_draggable.asp -->
+<script>
+  //Make the DIV element draggagle:
+  dragElement(document.getElementById("draggable"));
+  
+  function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById(elmnt.id)) {
+      /* if present, the header is where you move the DIV from:*/
+      document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+    } else {
+      /* otherwise, move the DIV from anywhere inside the DIV:*/
+      elmnt.onmousedown = dragMouseDown;
+    }
+  
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      // set the element's new position:
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+  
+    function closeDragElement() {
+      /* stop moving when mouse button is released:*/
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
+
+
+
+
+
+  ontouchmoveElement(document.getElementById("draggable"));
+  function ontouchmoveElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById(elmnt.id)) {
+      /* if present, the header is where you move the DIV from:*/
+      document.getElementById(elmnt.id).ontouchstart = ontouchmoveMobile;
+    } else {
+      /* otherwise, move the DIV from anywhere inside the DIV:*/
+      elmnt.ontouchstart = ontouchmoveMobile;
+    }
+  
+    function ontouchmoveMobile(e) {
+      e = e || window.event;
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.ontouchend = closeDragElementMobile;
+      // call a function whenever the cursor moves:
+      document.ontouchmove = elementDragMoblie;
+    }
+  
+    function elementDragMoblie(e) {
+      e = e || window.event;
+      // calculate the new cursor position:
+      console.log(e.changedTouches[0].clientX)
+      pos1 = pos3 - e.changedTouches[0].clientX;
+      pos2 = pos4 - e.changedTouches[0].clientY;
+      pos3 = e.changedTouches[0].clientX;
+      pos4 = e.changedTouches[0].clientY;
+      // set the element's new position:
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+  
+    function closeDragElementMobile() {
+      /* stop moving when mouse button is released:*/
+      document.ontouchend = null;
+      document.ontouchstart = null;
+    }
+  }
+</script>
+
+
+<%- include("bottom_navbar.ejs") %>

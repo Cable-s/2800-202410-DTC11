@@ -304,6 +304,14 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
   res.json(gptResponse)
 });
 
+app.get("/admin", isAuthenticated, (req, res) => {
+  res.render("admin.ejs")
+});
+
+app.post("/admin", isAuthenticated, async (req, res) => {
+  res.render("foundit.ejs")
+})
+
 app.get("*", (req, res) => {
   res.render("404.ejs")
 })
