@@ -163,7 +163,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect("/index");
+  res.redirect("/");
 });
 
 // middleware for authentication check
