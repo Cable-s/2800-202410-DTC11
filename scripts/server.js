@@ -304,14 +304,17 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
   res.json(gptResponse)
 });
 
+//hidden admin route for beginning of the easter egg
 app.get("/admin", isAuthenticated, (req, res) => {
   res.render("admin.ejs")
 });
 
+// post route for the admin route when finding the hidden button
 app.post("/admin", isAuthenticated, async (req, res) => {
   res.render("foundit.ejs")
 })
 
+// 404 catch route
 app.get("*", (req, res) => {
   res.render("404.ejs")
 })
