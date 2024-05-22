@@ -29,51 +29,52 @@ PROMPT = `
 `
 
 async function setUpGPT() {
-  const assistant = await openai.beta.assistants.create({
-    name: "Harmonia", // doesn't work here
-    instructions: PROMPT, // doesn't work here
-    model: "gpt-3.5-turbo"
-  })
-  const thread = await openai.beta.threads.create()
-  return [assistant, thread]
+    const assistant = await openai.beta.assistants.create({
+        name: "Harmonia", // doesn't work here
+        instructions: PROMPT, // doesn't work here
+        model: "gpt-3.5-turbo"
+    })
+    const thread = await openai.beta.threads.create()
+    return [assistant, thread]
 }
 
 
 async function sendAndReceiveMessage(assistant, thread, userMessage) {
-  // create the message
-  const message = await openai.beta.threads.messages.create(
-    thread.id,
-    {
-      role: "user",
-      content: userMessage
-    }
-  );
-
-  // send the message using polling
-  let run = await openai.beta.threads.runs.createAndPoll(
-    thread.id,
-    {
-      assistant_id: assistant.id,
-      instructions: PROMPT
-    }
-  );
-
-  // await the message response
-  if (run.status === 'completed') {
-    const messages = await openai.beta.threads.messages.list(
-      run.thread_id
+    // create the message
+    const message = await openai.beta.threads.messages.create(
+        thread.id,
+        {
+            role: "user",
+            content: userMessage
+        }
     );
-    for (const message of messages.data.reverse()) {
-      console.log(`${message.role} > ${message.content[0].text.value}`);
+
+    // send the message using polling
+    let run = await openai.beta.threads.runs.createAndPoll(
+        thread.id,
+        {
+            assistant_id: assistant.id,
+            instructions: PROMPT
+        }
+    );
+
+    // await the message response
+    if (run.status === 'completed') {
+        const messages = await openai.beta.threads.messages.list(
+            run.thread_id
+        );
+        for (const message of messages.data.reverse()) {
+            if(message.role == "assistant"){
+                console.log(message.content[0].text.value)
+                return message.content[0].text.value
+            }
+        }
+    } else {
+        console.log(run.status);
     }
-  } else {
-    console.log(run.status);
-  }
 }
 
-async function main() {
-  const [assistant, thread] = await setUpGPT()
-  sendAndReceiveMessage(assistant, thread, "hello what's your name")
-}
-
-main()
+module.exports = {
+    setUpGPT,
+    sendAndReceiveMessage
+  };
