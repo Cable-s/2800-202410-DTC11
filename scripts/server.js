@@ -301,16 +301,14 @@ app.get("/harmonia-dm", isAuthenticated, (req, res) => {
   res.sendFile(chatBotPath)
 });
 
+let allUserMessages = []
+
 app.post("/sendMessage", isAuthenticated, async (req, res) => {
   message = req.body.message
+  allUserMessages.push(message)
 
-  let assistant, thread
-
-  if (!assistant && !thread) { // thread not working
-    [assistant, thread] = await setUpGPT()
-  }
-  console.log(thread.id)
-  gptResponse = await sendAndReceiveMessage(assistant, thread, message)
+  const [assistant, thread] = await setUpGPT()
+  gptResponse = await sendAndReceiveMessage(assistant, thread, allUserMessages)
 
   res.json(gptResponse)
 });
