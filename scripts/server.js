@@ -177,10 +177,23 @@ function isAuthenticated(req, res, next) {
 
 // Home page
 app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home.ejs");
+  res.render("home");
 });
 
-app.use('/scripts', express.static('scripts'));
+// Icon mapping function
+const deviceIcons = {
+  tv: "fa-tv",
+  lights: "fa-lightbulb",
+  speaker: "fa-volume-up",
+  clock: "fa-clock",
+  blind: "fa-blinds",
+  coffeemachine: "fa-coffee",
+  default: "fa-question-circle", // Default icon for unknown devices
+};
+
+function getDeviceIcon(deviceName) {
+  return deviceIcons[deviceName.toLowerCase()] || deviceIcons.default;
+}
 
 app.get('/roomList', isAuthenticated, async (req, res) => {
   try {
@@ -206,6 +219,8 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
     if (classifyBy === 'category') {
       // Group devices by category using .reduce()
       devicesByCategory = userDevices.reduce((acc, device) => {
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
         // if the category is not in the accumulator, make it empty
         if (!acc[device.category]) {
           acc[device.category] = [];
@@ -220,6 +235,8 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
     } else if (classifyBy === 'activeness') {
       // Group devices by status using .reduce()
       devicesByCategory = userDevices.reduce((acc, device) => {
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
         if (!acc[device.activeness]) {
           // if the activeness is not in the accumulator, make it empty
           acc[device.activeness] = [];
@@ -233,6 +250,8 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
     } else {
       // Group devices by room using .reduce()
       const devicesByRoom = userDevices.reduce((acc, device) => {
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
         if (!acc[device.room]) {
           acc[device.room] = [];
         }
@@ -357,3 +376,5 @@ app.post("/sendMessage", isAuthenticated, (req, res) => {
   allUsersMessages.push(req.body.message);
   res.redirect("/harmonia-dm");
 });
+
+module.exports = app;
