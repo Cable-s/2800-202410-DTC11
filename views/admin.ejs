@@ -97,7 +97,6 @@
     function elementDragMoblie(e) {
       e = e || window.event;
       // calculate the new cursor position:
-      console.log(e.changedTouches[0].clientX)
       pos1 = pos3 - e.changedTouches[0].clientX;
       pos2 = pos4 - e.changedTouches[0].clientY;
       pos3 = e.changedTouches[0].clientX;
