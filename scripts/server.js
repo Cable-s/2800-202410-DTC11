@@ -188,7 +188,19 @@ const deviceIcons = {
   clock: "fa-clock",
   blind: "fa-blinds",
   coffeemachine: "fa-coffee",
-  default: "fa-question-circle", // Default icon for unknown devices
+  washingmachine: "fa-tint",
+  car: "fa-car",
+  kettle: "fa-coffee",
+  fridge: "fa-snowflake",
+  thermostat: "fa-thermometer-half",
+  vacumcleaner: "fa-robot",
+  shower: "fa-shower",
+  stove: "fa-fire",
+  ringcamera: "fa-video",
+  dishwasher: "fa-utensils",
+  foodcooker: "fa-utensils",
+  teslabot: "fa-robot",
+  default: "fa-question-circle",
 };
 
 function getDeviceIcon(deviceName) {
