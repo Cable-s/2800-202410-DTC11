@@ -89,6 +89,10 @@ app.get("/signUp", (req, res) => {
 
 app.post("/signUp", async (req, res) => {
   if (req.body.password == req.body.repeat_password) {
+    userExists = await users.findOne({ username: req.body.username })
+    if (userExists) {
+      return res.redirect("/signUp?error=user_exists");
+    }
     saltRounds = 10;
     hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
     const user = new users({
