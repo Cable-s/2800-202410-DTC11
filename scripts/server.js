@@ -53,7 +53,13 @@ const userSchema = new mongoose.Schema({
 });
 
 const deviceSchema = new mongoose.Schema({
-  name: String,
+  category: String,
+  deviceFunctions: Object,
+  deviceName: String,
+  room: String,
+  routineId: String,
+  userId: mongoose.Schema.Types.ObjectId,
+  activeness: String
 });
 
 const users = mongoose.model("2800users", userSchema);
@@ -183,9 +189,103 @@ app.get("/home", isAuthenticated, (req, res) => {
   res.render("home");
 });
 
-// Room list page
-app.get("/roomList", isAuthenticated, (req, res) => {
-  res.render("roomList");
+// Icon mapping function
+const deviceIcons = {
+  tv: "fa-tv",
+  lights: "fa-lightbulb",
+  speaker: "fa-volume-up",
+  clock: "fa-clock",
+  blind: "fa-blinds",
+  coffeemachine: "fa-coffee",
+  washingmachine: "fa-tint",
+  car: "fa-car",
+  kettle: "fa-coffee",
+  fridge: "fa-snowflake",
+  thermostat: "fa-thermometer-half",
+  vacumcleaner: "fa-robot",
+  shower: "fa-shower",
+  stove: "fa-fire",
+  ringcamera: "fa-video",
+  dishwasher: "fa-utensils",
+  foodcooker: "fa-utensils",
+  teslabot: "fa-robot",
+  default: "fa-question-circle",
+};
+
+function getDeviceIcon(deviceName) {
+  return deviceIcons[deviceName.toLowerCase()] || deviceIcons.default;
+}
+
+app.get('/roomList', isAuthenticated, async (req, res) => {
+  try {
+    // Get the username from the session
+    const username = req.session.user.username;
+
+    // Check if the username is not found in the session
+    if (!username) {
+      throw new Error('Username not found in session');
+    }
+
+    // Default to 'room' when enter the roomList page
+    const { classifyBy = 'room' } = req.query;
+    let filter = { username };
+
+    // Find user's devices from the database
+    const userDevices = await devices.find(filter);
+
+    // Store devices by room or category or activeness
+    let devicesByCategory = {};
+
+    // CHeck if the classifyBy is set to 'category'
+    if (classifyBy === 'category') {
+      // Group devices by category using .reduce()
+      devicesByCategory = userDevices.reduce((acc, device) => {
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
+        // if the category is not in the accumulator, make it empty
+        if (!acc[device.category]) {
+          acc[device.category] = [];
+        }
+        // Push the device to the category
+        acc[device.category].push(device);
+        return acc;
+      }, {});
+      // Render the roomList page with classiried devices by category
+      res.render('roomList', { devicesByCategory, classifyBy });
+      // Check if the classifyBy is set to 'activeness'
+    } else if (classifyBy === 'activeness') {
+      // Group devices by status using .reduce()
+      devicesByCategory = userDevices.reduce((acc, device) => {
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
+        if (!acc[device.activeness]) {
+          // if the activeness is not in the accumulator, make it empty
+          acc[device.activeness] = [];
+        }
+        // Push device to the activeness
+        acc[device.activeness].push(device);
+        return acc;
+      }, {});
+      res.render('roomList', { devicesByCategory, classifyBy });
+      // Else, group devices by room
+    } else {
+      // Group devices by room using .reduce()
+      const devicesByRoom = userDevices.reduce((acc, device) => {
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
+        if (!acc[device.room]) {
+          acc[device.room] = [];
+        }
+        acc[device.room].push(device);
+        return acc;
+      }, {});
+      res.render('roomList', { devicesByRoom, classifyBy: 'room' });
+    }
+    // Catch errors
+  } catch (err) {
+    console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
 });
 
 // the password recovery route
