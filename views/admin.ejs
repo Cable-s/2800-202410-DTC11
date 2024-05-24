@@ -93,8 +93,8 @@
       console.log("2")
       e = e || window.event;
       // get the mouse cursor position at startup:
-      pos3 = e.touches[0].clientX;
-      pos4 = e.touches[0].clientY;
+      pos3 = e.targetTouches[0].clientX;
+      pos4 = e.targetTouches[0].clientY;
       document.ontouchend = closeDragElementMobile;
       // call a function whenever the cursor moves:
       document.ontouchmove = elementDragMoblie;
@@ -104,10 +104,10 @@
       console.log("3")
       e = e || window.event;
       // calculate the new cursor position:
-      pos1 = pos3 - e.touches[0].clientX;
-      pos2 = pos4 - e.touches[0].clientY;
-      pos3 = e.touches[0].clientX;
-      pos4 = e.touches[0].clientY;
+      pos1 = pos3 - e.targetTouches[0].clientX;
+      pos2 = pos4 - e.targetTouches[0].clientY;
+      pos3 = e.targetTouches[0].clientX;
+      pos4 = e.targetTouches[0].clientY;
       // set the element's new position:
       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
