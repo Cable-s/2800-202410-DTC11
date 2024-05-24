@@ -391,6 +391,7 @@ app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
 });
 
+
 app.get("/deviceRoutines", isAuthenticated, (req, res) => {
   res.render("deviceRoutines.ejs");
 });
@@ -409,6 +410,41 @@ app.get("/deviceInfo", isAuthenticated, (req, res) => {
 
 app.get("/createFunction", isAuthenticated, (req, res) => {
   res.render("createFunction.ejs");
+});
+
+const routineSchema = new mongoose.Schema({
+  routineName: String,
+  routineStart: String,
+  routineEnd: String,
+  activeDays: [String], // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
+  userName: String
+});
+
+const Routine = mongoose.model('Routine', routineSchema);
+
+app.post('/create-routine', async (req, res) => {
+  const { routineName, routineStart, routineEnd, activeDays } = req.body;
+
+  // Convert time to Unix timestamp (seconds since midnight). for example 1 am would be represented as 3600 and 1:30 am would be 5400
+  const convertToUnixTimestamp = (time) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 3600 + minutes * 60;
+  };
+
+  const routine = new Routine({
+    routineName,
+    routineStart: convertToUnixTimestamp(routineStart),
+    routineEnd: convertToUnixTimestamp(routineEnd),
+    activeDays: activeDays.split(','), //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
+    userName: req.session.user.username
+  });
+
+  try {
+    await routine.save();
+    res.redirect('/deviceRoutines');
+  } catch (error) {
+    res.status(500).send('Error saving routine: ' + error.message);
+  }
 });
 
 app.get("/editFunction", isAuthenticated, (req, res) => {
