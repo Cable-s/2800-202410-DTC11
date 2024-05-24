@@ -106,7 +106,7 @@ app.post("/signUp", async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       password: hashedPassword,
-      name: req.body.firstName,
+      firstName: req.body.firstName,
       lastName: req.body.lastName,
     });
 
@@ -121,7 +121,7 @@ app.post("/signUp", async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       password: hashedPassword,
-      name: req.body.firstName,
+      firstName: req.body.firstName,
       lastName: req.body.lastName,
     });
   } else {
@@ -155,6 +155,8 @@ app.post("/login", async (req, res) => {
           req.session.authenticated = true; // authentication here
           req.session.user = {
             username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             phone: user.phone,
           }; // Store user information in session
@@ -352,11 +354,17 @@ app.get("/profile", isAuthenticated, (req, res) => {
   // Get the user's name from the session
   const userName = req.session.user.username;
   console.log(userName);
+  const firstName = req.session.user.firstName;
+  console.log(firstName)
+  const lastName = req.session.user.lastName;
+  console.log(lastName);
   const userEmail = req.session.user.email;
   const userPhone = req.session.user.phone;
   // const userPhonenumber = req.session.user.phonenumber;
   res.render("profilePage.ejs", {
     userName,
+    firstName,
+    lastName,
     userEmail,
     userPhone,
   });
