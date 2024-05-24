@@ -111,11 +111,17 @@ app.post("/signUp", async (req, res) => {
       lastName: req.body.lastName,
     });
 
+
     devices.find({}).then((result) => {
       result.forEach((device) => {
+        let functionValues = {}
+        Object.keys(device.deviceFunctions).forEach((func) => {
+          functionValues[func] = "0"
+        })
         device.users.push({
           "activeness": "off",
           "room": "",
+          "functionValues": functionValues,
           "routineID": "",
           "username": req.body.username
         })
