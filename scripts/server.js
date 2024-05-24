@@ -212,10 +212,12 @@ const deviceIcons = {
   default: "fa-question-circle",
 };
 
+// Function to get the icon class for a device
 function getDeviceIcon(deviceName) {
   return deviceIcons[deviceName.toLowerCase()] || deviceIcons.default;
 }
 
+// Room list page
 app.get('/roomList', isAuthenticated, async (req, res) => {
   try {
     // Get the username from the session
@@ -228,61 +230,53 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
 
     // Default to 'room' when enter the roomList page
     const { classifyBy = 'room' } = req.query;
-    let filter = { username };
 
     // Find user's devices from the database
-    const userDevices = await devices.find(filter);
+    const userDevices = await devices.find({}).lean();
 
     // Store devices by room or category or activeness
-    let devicesByCategory = {};
+    let devicesGrouped = {};
 
-    // CHeck if the classifyBy is set to 'category'
-    if (classifyBy === 'category') {
-      // Group devices by category using .reduce()
-      devicesByCategory = userDevices.reduce((acc, device) => {
-        const icon = getDeviceIcon(device.deviceName);
+    // Iterate over each device and group them based on the classifyBy parameter
+    userDevices.forEach(device => {
+      // Check if the device has users and filter the user array
+      const matchedUser = device.users.find(user => user.username === username);
+
+      if (matchedUser) {
+        // Get the icon for the device
+        const icon = getDeviceIcon(device.deviceName); 
         device.icon = icon;
-        // if the category is not in the accumulator, make it empty
-        if (!acc[device.category]) {
-          acc[device.category] = [];
+
+        // CHeck if the classifyBy is set to 'category'
+        if (classifyBy === 'category') {
+          if (!devicesGrouped[device.category]) {
+            devicesGrouped[device.category] = [];
+          }
+          // JS spread operator to merge properties from two objects into a new object, which is then added to an array
+          devicesGrouped[device.category].push({ ...device, ...matchedUser });
+
+        // Group devices by activeness
+        } else if (classifyBy === 'activeness') {
+          if (!devicesGrouped[matchedUser.activeness]) {
+            devicesGrouped[matchedUser.activeness] = [];
+          }
+          devicesGrouped[matchedUser.activeness].push({ ...device, ...matchedUser });
+
+        // Default grouping by room
+        } else {
+          if (!devicesGrouped[matchedUser.room]) {
+            devicesGrouped[matchedUser.room] = [];
+          }
+          devicesGrouped[matchedUser.room].push({ ...device, ...matchedUser });
         }
-        // Push the device to the category
-        acc[device.category].push(device);
-        return acc;
-      }, {});
-      // Render the roomList page with classiried devices by category
-      res.render('roomList', { devicesByCategory, classifyBy });
-      // Check if the classifyBy is set to 'activeness'
-    } else if (classifyBy === 'activeness') {
-      // Group devices by status using .reduce()
-      devicesByCategory = userDevices.reduce((acc, device) => {
-        const icon = getDeviceIcon(device.deviceName);
-        device.icon = icon;
-        if (!acc[device.activeness]) {
-          // if the activeness is not in the accumulator, make it empty
-          acc[device.activeness] = [];
-        }
-        // Push device to the activeness
-        acc[device.activeness].push(device);
-        return acc;
-      }, {});
-      res.render('roomList', { devicesByCategory, classifyBy });
-      // Else, group devices by room
-    } else {
-      // Group devices by room using .reduce()
-      const devicesByRoom = userDevices.reduce((acc, device) => {
-        const icon = getDeviceIcon(device.deviceName);
-        device.icon = icon;
-        if (!acc[device.room]) {
-          acc[device.room] = [];
-        }
-        acc[device.room].push(device);
-        return acc;
-      }, {});
-      res.render('roomList', { devicesByRoom, classifyBy: 'room' });
-    }
-    // Catch errors
+      }
+    });
+
+    // Render the roomList page with the grouped devices
+    res.render('roomList', { devicesGrouped, classifyBy });
+
   } catch (err) {
+    // Handle any errors that occur during the process
     console.error('Error fetching devices:', err);
     res.status(500).send('Server error');
   }
