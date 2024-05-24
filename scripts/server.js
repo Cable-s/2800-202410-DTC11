@@ -414,8 +414,31 @@ app.get("/profile", isAuthenticated, (req, res) => {
 });
 
 app.get("/connectedRooms", isAuthenticated, (req, res) => {
-  res.render("connectedRooms.ejs");
+  let userDeviceRooms = new Array()
+  let username = req.session.user.username;
+  console.log(username);
+  
+  devices.find({}).then(async (result) => {
+    result.forEach(async (device) => {
+      console.log(device.deviceName)
+
+      const matchedUser = await device.users.find(user => user.username === username);
+      if (matchedUser != undefined && matchedUser.username == username) {
+        console.log(matchedUser)
+        userDeviceRooms.push(matchedUser.room)
+      }
+    })
+    
+    const allUsersRooms = await userDeviceRooms
+    console.log(allUsersRooms)
+    res.render("connectedRooms.ejs", {allUsersRooms});
+  });
 });
+
+app.post("/connectedRooms", async (req, res) => {
+  const selectedRoom = req.body.room;
+  console.log(selectedRoom);
+})
 
 app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
