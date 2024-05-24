@@ -1,12 +1,17 @@
 <%- include("top_navbar") %>
 
-    <body class="bg-background text-accent">
+<body class="bg-background text-accent mt-24">
         <!-- Main Container -->
+    <div class="mx-4">
+        <div class="border-b border-gray-700 bg-primary px-4 py-5 mb-6 sm:px-6 rounded-lg">
+            <div class="flex items-center justify-center">
+                <div class="mt-2">
+                    <h3 class="text-2xl font-semibold leading-6 text-secondary text-center">Edit Routine</h3>
+                </div>
+            </div>
+        </div>
         <div class="container mx-auto p-4 max-w-lg bg-primary rounded-lg shadow-lg">
             <!-- Title of Page -->
-            <div class="flex items-center justify-center p-4 bg-primary text-secondary rounded-t-lg">
-                <h1 class="text-lg font-semibold">Edit Routine</h1>
-            </div>
             <!-- Form -->
             <div class="p-4">
                 <!-- Rename -->
@@ -16,7 +21,7 @@
                         class="mt-1 block w-full px-3 py-2 border border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-secondary sm:text-sm bg-white text-black"
                         placeholder="placeholder for routine name in db">
                 </div>
-                <!-- Start Time and End Time -->
+                <!-- Start Time and End Time --> 
                 <div class="mb-4 grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-secondary">Start Time</label>
@@ -32,7 +37,7 @@
                 <!-- Date -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-secondary">Select Date</label>
-                    <div class="flex justify-between mt-2">
+                    <div class="flex justify-between justify-center mx-auto mt-2 overflow-scroll gap-1">
                         <button id="mon"
                             class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Mon</button>
                         <button id="tue"
@@ -53,7 +58,7 @@
                 <div class="mb-4">
                     <button
                         class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary">
-                        + Add Device
+                        <a href="/connectedRooms">+ Add Device</a>
                     </button>
                 </div>
                 <!-- Device -->
@@ -68,19 +73,23 @@
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
                             </div>
                         </label>
-                        <button class="bg-secondary text-primary px-4 py-1 rounded-full">Edit</button>
+                        <button class="bg-secondary text-primary px-4 py-1 rounded-full">
+                            <a href="/deviceInfo">Edit</a>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('.date-button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        button.classList.toggle('selected');
-                    });
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.date-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.classList.toggle('selected');
                 });
             });
-        </script>
-    </body>
+        });
+    </script>
+</body>
+
+    <%- include("bottom_navbar.ejs") %>

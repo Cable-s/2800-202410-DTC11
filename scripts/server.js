@@ -7,10 +7,16 @@ const { Db } = require("mongodb");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const nodemailer = require("nodemailer");
+const path = require("path")
+const bodyParser = require('body-parser');
+const { createAssistant, sendMessages } = require("./gptScript.js");
+const { parseSchema} = require("./getUserDevices.js");
+
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.use(bodyParser.json()); // for the /sendMessage endpoint
 
 main().catch((err) => console.log(err));
 
@@ -48,7 +54,14 @@ const userSchema = new mongoose.Schema({
 });
 
 const deviceSchema = new mongoose.Schema({
-  name: String,
+  category: String,
+  deviceFunctions: Object,
+  deviceName: String,
+  room: String,
+  routineId: String,
+  userId: mongoose.Schema.Types.ObjectId,
+  activeness: String,
+  users: Array
 });
 
 const users = mongoose.model("2800users", userSchema);
@@ -84,6 +97,10 @@ app.get("/signUp", (req, res) => {
 
 app.post("/signUp", async (req, res) => {
   if (req.body.password == req.body.repeat_password) {
+    userExists = await users.findOne({ username: req.body.username })
+    if (userExists) {
+      return res.redirect("/signUp?error=user_exists");
+    }
     saltRounds = 10;
     hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
     const user = new users({
@@ -91,9 +108,27 @@ app.post("/signUp", async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       password: hashedPassword,
-      name: req.body.firstName,
+      firstName: req.body.firstName,
       lastName: req.body.lastName,
     });
+
+
+    devices.find({}).then((result) => {
+      result.forEach((device) => {
+        let functionValues = {}
+        Object.keys(device.deviceFunctions).forEach((func) => {
+          functionValues[func] = "0"
+        })
+        device.users.push({
+          "activeness": "off",
+          "room": "",
+          "functionValues": functionValues,
+          "routineID": "",
+          "username": req.body.username
+        })
+        device.save()
+      })
+    })
 
     req.session.user = {
       username: req.body.username,
@@ -106,7 +141,7 @@ app.post("/signUp", async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       password: hashedPassword,
-      name: req.body.firstName,
+      firstName: req.body.firstName,
       lastName: req.body.lastName,
     });
   } else {
@@ -140,6 +175,8 @@ app.post("/login", async (req, res) => {
           req.session.authenticated = true; // authentication here
           req.session.user = {
             username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             phone: user.phone,
           }; // Store user information in session
@@ -158,7 +195,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session.destroy();
-  res.redirect("/index");
+  res.redirect("/");
 });
 
 // middleware for authentication check
@@ -170,13 +207,124 @@ function isAuthenticated(req, res, next) {
 }
 
 // Home page
-app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home");
+app.get("/home", isAuthenticated, async (req, res) => {
+  let usersDevices = new Array()
+  let username = req.session.user.username;
+  console.log(username);
+  
+  devices.find({}).then(async (result) => {
+    result.forEach(async (device) => {
+      console.log(device.deviceName)
+
+      const matchedUser = await device.users.find(user => user.username === username);
+      if (matchedUser != undefined && matchedUser.username == username) {
+        const icon = getDeviceIcon(device.deviceName);
+        usersDevices.push({
+          name: device.deviceName,
+          icon: icon,
+          matchedUser
+        })
+      }
+    })
+
+    
+    const allUsersDevices = await usersDevices
+    // console.log(allUsersDevices)
+    res.render("home.ejs", {allUsersDevices}); 
+  })
 });
 
+// Icon mapping function
+const deviceIcons = {
+  tv: "fa-tv",
+  lights: "fa-lightbulb",
+  speaker: "fa-volume-up",
+  clock: "fa-clock",
+  blind: "fa-blinds",
+  coffeemachine: "fa-coffee",
+  washingmachine: "fa-tint",
+  car: "fa-car",
+  kettle: "fa-coffee",
+  fridge: "fa-snowflake",
+  thermostat: "fa-thermometer-half",
+  vacumcleaner: "fa-robot",
+  shower: "fa-shower",
+  stove: "fa-fire",
+  ringcamera: "fa-video",
+  dishwasher: "fa-utensils",
+  foodcooker: "fa-utensils",
+  teslabot: "fa-robot",
+  default: "fa-question-circle",
+};
+
+// Function to get the icon class for a device
+function getDeviceIcon(deviceName) {
+  return deviceIcons[deviceName.toLowerCase()] || deviceIcons.default;
+}
+
 // Room list page
-app.get("/roomList", isAuthenticated, (req, res) => {
-  res.render("roomList");
+app.get('/roomList', isAuthenticated, async (req, res) => {
+  try {
+    // Get the username from the session
+    const username = req.session.user.username;
+
+    // Check if the username is not found in the session
+    if (!username) {
+      throw new Error('Username not found in session');
+    }
+
+    // Default to 'room' when enter the roomList page
+    const { classifyBy = 'room' } = req.query;
+
+    // Find user's devices from the database
+    const userDevices = await devices.find({}).lean();
+
+    // Store devices by room or category or activeness
+    let devicesGrouped = {};
+
+    // Iterate over each device and group them based on the classifyBy parameter
+    userDevices.forEach(device => {
+      // Check if the device has users and filter the user array
+      const matchedUser = device.users.find(user => user.username === username);
+
+      if (matchedUser) {
+        // Get the icon for the device
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
+
+        // CHeck if the classifyBy is set to 'category'
+        if (classifyBy === 'category') {
+          if (!devicesGrouped[device.category]) {
+            devicesGrouped[device.category] = [];
+          }
+          // JS spread operator to merge properties from two objects into a new object, which is then added to an array
+          devicesGrouped[device.category].push({ ...device, ...matchedUser });
+
+          // Group devices by activeness
+        } else if (classifyBy === 'activeness') {
+          if (!devicesGrouped[matchedUser.activeness]) {
+            devicesGrouped[matchedUser.activeness] = [];
+          }
+          devicesGrouped[matchedUser.activeness].push({ ...device, ...matchedUser });
+
+          // Default grouping by room
+        } else {
+          if (!devicesGrouped[matchedUser.room]) {
+            devicesGrouped[matchedUser.room] = [];
+          }
+          devicesGrouped[matchedUser.room].push({ ...device, ...matchedUser });
+        }
+      }
+    });
+
+    // Render the roomList page with the grouped devices
+    res.render('roomList', { devicesGrouped, classifyBy });
+
+  } catch (err) {
+    // Handle any errors that occur during the process
+    console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
 });
 
 // the password recovery route
@@ -249,38 +397,153 @@ app.get("/profile", isAuthenticated, (req, res) => {
   // Get the user's name from the session
   const userName = req.session.user.username;
   console.log(userName);
+  const firstName = req.session.user.firstName;
+  console.log(firstName)
+  const lastName = req.session.user.lastName;
+  console.log(lastName);
   const userEmail = req.session.user.email;
   const userPhone = req.session.user.phone;
   // const userPhonenumber = req.session.user.phonenumber;
   res.render("profilePage.ejs", {
     userName,
+    firstName,
+    lastName,
     userEmail,
     userPhone,
   });
 });
 
-app.get("/roomListPage", isAuthenticated, (req, res) => {
-  res.render("roomList.ejs");
+app.get("/connectedRooms", isAuthenticated, (req, res) => {
+  let userDeviceRooms = new Array()
+  let username = req.session.user.username;
+  console.log(username);
+  
+  devices.find({}).then(async (result) => {
+    result.forEach(async (device) => {
+      console.log(device.deviceName)
+
+      const matchedUser = await device.users.find(user => user.username === username);
+      if (matchedUser != undefined && matchedUser.username == username) {
+        userDeviceRooms.push(matchedUser.room)
+      }
+    })
+    
+    const allUsersRooms = await userDeviceRooms
+    res.render("connectedRooms.ejs", {allUsersRooms});
+  });
 });
+
+app.post("/connectedRooms", async (req, res) => {
+  const selectedRoom = req.body.room;
+  console.log(selectedRoom);
+})
 
 app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
 });
 
+
 app.get("/deviceRoutines", isAuthenticated, (req, res) => {
   res.render("deviceRoutines.ejs");
+});
+
+app.get("/createRoutine", isAuthenticated, (req, res) => {
+  res.render("createRoutine.ejs");
 });
 
 app.get("/editRoutines", isAuthenticated, (req, res) => {
   res.render("editRoutines.ejs");
 });
 
-allUsersMessages = [];
-app.get("/harmonia-dm", isAuthenticated, (req, res) => {
-  res.render("chatbot.ejs", { allUsersMessages: allUsersMessages });
+app.get("/deviceInfo", isAuthenticated, (req, res) => {
+  res.render("deviceInfo.ejs");
 });
 
-app.post("/sendMessage", isAuthenticated, (req, res) => {
-  allUsersMessages.push(req.body.message);
-  res.redirect("/harmonia-dm");
+app.get("/createFunction", isAuthenticated, (req, res) => {
+  res.render("createFunction.ejs");
 });
+
+const routineSchema = new mongoose.Schema({
+  routineName: String,
+  routineStart: String,
+  routineEnd: String,
+  activeDays: [String], // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
+  userName: String
+});
+
+const Routine = mongoose.model('Routine', routineSchema);
+
+app.post('/create-routine', async (req, res) => {
+  const { routineName, routineStart, routineEnd, activeDays } = req.body;
+
+  // Convert time to Unix timestamp (seconds since midnight). for example 1 am would be represented as 3600 and 1:30 am would be 5400
+  const convertToUnixTimestamp = (time) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 3600 + minutes * 60;
+  };
+
+  const routine = new Routine({
+    routineName,
+    routineStart: convertToUnixTimestamp(routineStart),
+    routineEnd: convertToUnixTimestamp(routineEnd),
+    activeDays: activeDays.split(','), //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
+    userName: req.session.user.username
+  });
+
+  try {
+    await routine.save();
+    res.redirect('/deviceRoutines');
+  } catch (error) {
+    res.status(500).send('Error saving routine: ' + error.message);
+  }
+});
+
+app.get("/editFunction", isAuthenticated, (req, res) => {
+  res.render("editFunction.ejs");
+});
+
+app.get("/harmonia-dm", isAuthenticated, async (req, res) => {
+  let userName = req.session.user.username // the users username
+  alluserDevices = await parseSchema(devices, userName)
+  chatBotPath = path.join(__dirname, '..', 'views', 'chatBot.html');
+  res.sendFile(chatBotPath)
+});
+
+let userMessageHistory = []
+let aiMessageHistory = []
+
+app.post("/sendMessage", isAuthenticated, async (req, res) => {
+  let userName = req.session.user.username // the users username
+  message = req.body.message // the message a user sends
+  userMessageHistory.push(message) // store all the users messages in an array
+
+  assistant = await createAssistant() // store the created assistant
+
+  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices)
+  aiMessageHistory.push(gptResponse)
+
+  res.json(gptResponse)
+});
+
+//hidden admin route for beginning of the easter egg
+app.get("/hidden", isAuthenticated, (req, res) => {
+  res.render("admin.ejs")
+});
+
+// post route for the admin route when finding the hidden button
+app.post("/hidden", isAuthenticated, async (req, res) => {
+  res.render("foundit.ejs")
+})
+
+app.get("/lights", (req, res) => {
+  res.render("lights.ejs")
+})
+
+app.get("/coffeemachine", (req, res) => {
+  res.render("coffeemachine.ejs")
+})
+
+// 404 catch route
+app.get("*", (req, res) => {
+  res.render("404.ejs")
+})

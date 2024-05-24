@@ -20,724 +20,117 @@
                 }
             }
         }
-
     </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
+<%- include("top_navbar.ejs") %>
 
-<body class="bg-primary">
-    <!-- Top Navbar -->
-    <%- include("top_navbar.ejs") %>
-
-    <main class="flex-1 mt-16 mb-10">
-        <!-- Welcome Message -->
-        <section class="w-full py-4 md:py-8 lg:py-16">
-            <div class="container px-4 md:px-6">
-                <div class="grid gap-6">
-                    <div class="grid gap-2">
-                        <h1 class="text-2xl text-accent font-bold md:text-3xl lg:text-4xl">Room List</h1>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <div class="flex gap-4"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Room types buttons/category -->
-        <section class="overflow-auto hover:overflow-scroll content-around">
-            <div class="flex">
-                <div class="text-center p-2">
-                    <a href="#livingroom_devices">
-                        <div class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-32 h-10 rounded-full inline-flex items-center justify-center">
-                            Living Room
+    <body class="bg-background">
+        <main class="flex-1 mt-16 mb-10 mx-2">
+            <!-- Filter section -->
+            <section class="w-full py-4">
+                <div class="container px-4">
+                    <div class="grid gap-6">
+                        <div class="border-b border-gray-700 bg-primary px-4 py-5 rounded-lg">
+                            <div class="flex items-center justify-center">
+                                <div class="mt-2">
+                                    <h3 class="text-2xl font-semibold text-accent">Classify Devices</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-center gap-4">
+                                <!-- Filter by rooms -->
+                                <button id="filter-room"
+                                    class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-24 h-10 rounded-full inline-flex items-center justify-center">Room</button>
+                                <!-- Filter by categories -->
+                                <button id="filter-category"
+                                    class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-24 h-10 rounded-full inline-flex items-center justify-center">Category</button>
+                                <!-- Filter by status -->
+                                <button id="filter-activeness"
+                                    class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-24 h-10 rounded-full inline-flex items-center justify-center">Status</button>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
-                <div class="text-center p-2">
-                    <a href="#kitchen_devices">
-                        <div class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary w-32 h-10 rounded-full inline-flex text-secondary text-base items-center justify-center">
-                            Kitchen
+            </section>
+
+            <!-- Shows what filter applied currently -->
+            <section class="w-full py-4">
+                <div class="container px-4">
+                    <div class="grid gap-6">
+                        <div class="grid gap-2">
+                            <h1 class="text-2xl text-accent font-bold">
+                                <%= classifyBy==='category' ? 'Device Categories' : classifyBy==='activeness'
+                                    ? 'Device Status' : 'Room List' %>
+                            </h1>
                         </div>
-                    </a>
-                </div>
-
-                <div class="text-center p-2">
-                    <a href="#bedroom_devices">
-                        <div class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary w-32 h-10 rounded-full inline-flex text-secondary text-base text-secondary items-center justify-center">
-                            Bed Room
+                        <div class="overflow-x-auto">
+                            <div class="flex gap-4"></div>
                         </div>
-                    </a>
+                    </div>
                 </div>
+            </section>
 
-                <div class="text-center p-2">
-                    <a href="#washroom_devices">
-                        <div class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary w-32 h-10 rounded-full inline-flex text-secondary text-base inline-flex items-center justify-center">
-                            Washroom
+            <!-- Devices grouped by the selected criterion -->
+            <section id="deviceSections" class="mx-4">
+                <% for (let group in devicesGrouped) { %>
+                    <section id="<%= group %>_devices" class="w-full bg-primary mt-4 mb-4 py-8 rounded-2xl">
+                        <div class="container px-4">
+                            <div class="grid grid-cols-1 gap-6">
+                                <div class="grid gap-2">
+                                    <h2 class="text-2xl font-bold text-accent">
+                                        <%= group.charAt(0).toUpperCase() + group.slice(1) %>
+                                    </h2>
+                                    <p class="text-accent">Your devices in the <%= group.charAt(0).toUpperCase() +
+                                            group.slice(1) %>
+                                            <%= classifyBy==='category' ? 'category' : classifyBy==='activeness'
+                                                ? 'status' : 'room' %>.
+                                    </p>
+                                </div>
+                                <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
+                                    <% devicesGrouped[group].forEach(device=> { %>
+                                        <a href="/<%=device.deviceName%>">
+                                            <div class="text-center p-4 basis-1/6">
+                                                <div
+                                                    class="bg-background border-4 border-secondary/50 shadow-2xl shadow-secondary hover:bg-background hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
+                                                    <i class="fas <%= device.icon %> text-secondary"></i>
+                                                </div>
+                                                <div class="text-accent text-xs">
+                                                    <%= device.deviceName %>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    <% }) %>
+                                </section>
+                            </div>
                         </div>
-                    </a>
-                </div>
-
-                <div class="text-center p-2">
-                    <a href="#solarium_devices">
-                        <div class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary w-32 h-10 rounded-full inline-flex text-secondary text-base inline-flex items-center justify-center">
-                            Solarium
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Devices for Living Room  -->
-        <section id="livingroom_devices" class="w-full bg-background mt-4 mb-4 py-8 md:py-12 lg:py-16 rounded-2xl">
-            <div class="container px-4 md:px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent md:text-3xl lg:text-4xl">Living Room</h2>
-                        <p class="text-accent">Your devices in the Living Room.</p>
-                    </div>
-
-                    <div>
-                        <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
-                            <!-- Device: Lights -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Lights</div>
-
-                            </div>
-
-                            <!-- Device: TV -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">TV</div>
-
-                            </div>
-
-                            <!-- Device: Speaker -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Speaker</div>
-
-                            </div>
-
-                            <!-- Device: Clock -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Clock</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Blind</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Personal Device(?)</div>
-
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Devices for Kitchen -->
-        <section id="kitchen_devices" class="w-full bg-background py-8 mb-4 md:py-12 lg:py-16 rounded-2xl">
-            <div class="container px-4 md:px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent md:text-3xl lg:text-4xl">Kitchen</h2>
-                        <p class="text-accent">Your devices in the Kitchen.</p>
-                    </div>
-
-                    <div>
-                        <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
-                            <!-- Device: Lights -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Lights</div>
-
-                            </div>
-
-                            <!-- Device: TV -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">TV</div>
-
-                            </div>
-
-                            <!-- Device: Speaker -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Speaker</div>
-
-                            </div>
-
-                            <!-- Device: Clock -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Clock</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Blind</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Personal Device(?)</div>
-
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Devices for Bed Room -->
-        <section id="bedroom_devices" class="w-full bg-background mb-4 py-8 mb-4 md:py-12 lg:py-16 rounded-2xl">
-            <div class="container px-4 md:px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent md:text-3xl lg:text-4xl">Bed Room</h2>
-                        <p class="text-accent">Your devices in the Bed Room.</p>
-                    </div>
-
-                    <div>
-                        <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
-                            <!-- Device: Lights -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Lights</div>
-
-                            </div>
-
-                            <!-- Device: TV -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">TV</div>
-
-                            </div>
-
-                            <!-- Device: Speaker -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Speaker</div>
-
-                            </div>
-
-                            <!-- Device: Clock -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Clock</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Blind</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Personal Device(?)</div>
-
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Devices for Washroom -->
-        <section id="washroom_devices" class="w-full bg-background mb-4 py-8 mb-4 md:py-12 lg:py-16 rounded-2xl">
-            <div class="container px-4 md:px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent md:text-3xl lg:text-4xl">Washroom</h2>
-                        <p class="text-accent">Your devices in the Washroom.</p>
-                    </div>
-
-                    <div>
-                        <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
-                            <!-- Device: Lights -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Lights</div>
-
-                            </div>
-
-                            <!-- Device: TV -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">TV</div>
-
-                            </div>
-
-                            <!-- Device: Speaker -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Speaker</div>
-
-                            </div>
-
-                            <!-- Device: Clock -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Clock</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Blind</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Personal Device(?)</div>
-
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Devices for Solarium -->
-        <section id="solarium_devices" class="w-full bg-background mb-4 py-8 mb-4 md:py-12 lg:py-16 rounded-2xl">
-            <div class="container px-4 md:px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent md:text-3xl lg:text-4xl">Solarium</h2>
-                        <p class="text-accent">Your devices in the Solarium.</p>
-                    </div>
-
-                    <div>
-                        <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
-                            <!-- Device: Lights -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Lights</div>
-
-                            </div>
-
-                            <!-- Device: TV -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">TV</div>
-
-                            </div>
-
-                            <!-- Device: Speaker -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Speaker</div>
-
-                            </div>
-
-                            <!-- Device: Clock -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Clock</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Blind</div>
-
-                            </div>
-
-                            <!-- Device: Blind -->
-                            <div class="text-center p-4 basis-1/6">
-                                <div
-                                    class="bg-accent hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="h-6 w-6 text-purple-500">
-                                        <path d="M10 2v2"></path>
-                                        <path d="M14 2v2"></path>
-                                        <path
-                                            d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1">
-                                        </path>
-                                        <path d="M6 2v2"></path>
-                                    </svg>
-                                </div>
-                                <div class="text-accent text-xs">Personal Device(?)</div>
-
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Bottom Navbar -->
-    <%- include("bottom_navbar.ejs") %>
-</body>
+                    </section>
+                    <% } %>
+            </section>
+        </main>
+
+        <%- include("bottom_navbar.ejs") %>
+
+
+        <!--
+        defines a function that changes the URL of the current page to include a query parameter, 
+        which triggers a re-rendering of the page with devices classified according to the selected criterion (e.g., room, category, or activeness).
+        
+        Generated by ChatGPT 4o
+        
+        @author https://chat.openai.com/
+        -->
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.getElementById('filter-room').addEventListener('click', () => filterDevices('room'));
+                    document.getElementById('filter-category').addEventListener('click', () => filterDevices('category'));
+                    document.getElementById('filter-activeness').addEventListener('click', () => filterDevices('activeness'));
+                });
+
+                function filterDevices(classifyBy) {
+                    window.location.href = `/roomList?classifyBy=${classifyBy}`;
+                }
+            </script>
+    </body>
+
+</html>
