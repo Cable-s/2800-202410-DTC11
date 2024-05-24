@@ -9,7 +9,7 @@ const MongoStore = require("connect-mongo");
 const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
-const { setUpGPT, sendAndReceiveMessage } = require("./gptScript.js");
+const { createAssistant, sendMessages } = require("./gptScript.js");
 
 
 const app = express();
@@ -206,8 +206,31 @@ function isAuthenticated(req, res, next) {
 }
 
 // Home page
-app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home");
+app.get("/home", isAuthenticated, async (req, res) => {
+  let usersDevices = new Array()
+  let username = req.session.user.username;
+  console.log(username);
+  
+  devices.find({}).then(async (result) => {
+    result.forEach(async (device) => {
+      console.log(device.deviceName)
+
+      const matchedUser = await device.users.find(user => user.username === username);
+      if (matchedUser != undefined && matchedUser.username == username) {
+        const icon = getDeviceIcon(device.deviceName);
+        usersDevices.push({
+          name: device.deviceName,
+          icon: icon,
+          matchedUser
+        })
+      }
+    })
+
+    
+    const allUsersDevices = await usersDevices
+    // console.log(allUsersDevices)
+    res.render("home.ejs", {allUsersDevices}); 
+  })
 });
 
 // Icon mapping function
@@ -426,14 +449,18 @@ app.get("/harmonia-dm", isAuthenticated, (req, res) => {
   res.sendFile(chatBotPath)
 });
 
-let allUserMessages = []
+let userMessageHistory = []
+let aiMessageHistory = []
 
 app.post("/sendMessage", isAuthenticated, async (req, res) => {
-  message = req.body.message
-  allUserMessages.push(message)
+  let userName = req.session.user.username // the users username
+  message = req.body.message // the message a user sends
+  userMessageHistory.push(message) // store all the users messages in an array
 
-  const [assistant, thread] = await setUpGPT()
-  gptResponse = await sendAndReceiveMessage(assistant, thread, allUserMessages)
+  assistant = await createAssistant() // store the created assistant
+
+  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName)
+  aiMessageHistory.push(gptResponse)
 
   res.json(gptResponse)
 });
