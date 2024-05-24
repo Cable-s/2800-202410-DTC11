@@ -9,7 +9,7 @@ const MongoStore = require("connect-mongo");
 const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
-const { setUpGPT, sendAndReceiveMessage } = require("./gptScript.js");
+const { createAssistant, sendMessages } = require("./gptScript.js");
 
 
 const app = express();
@@ -290,14 +290,17 @@ app.get("/harmonia-dm", isAuthenticated, (req, res) => {
   res.sendFile(chatBotPath)
 });
 
-let allUserMessages = []
+let userMessageHistory = []
+let aiMessageHistory = []
 
 app.post("/sendMessage", isAuthenticated, async (req, res) => {
   message = req.body.message
-  allUserMessages.push(message)
+  userMessageHistory.push(message) // store all the users messages in an array
 
-  const [assistant, thread] = await setUpGPT()
-  gptResponse = await sendAndReceiveMessage(assistant, thread, allUserMessages)
+  assistant = await createAssistant() // store the created assistant
+
+  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory)
+  aiMessageHistory.push(gptResponse)
 
   res.json(gptResponse)
 });
