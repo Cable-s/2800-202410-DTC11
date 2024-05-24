@@ -59,7 +59,8 @@ const deviceSchema = new mongoose.Schema({
   room: String,
   routineId: String,
   userId: mongoose.Schema.Types.ObjectId,
-  activeness: String
+  activeness: String,
+  users: Array
 });
 
 const users = mongoose.model("2800users", userSchema);
@@ -109,6 +110,18 @@ app.post("/signUp", async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
     });
+
+    devices.find({}).then((result) => {
+      result.forEach((device) => {
+        device.users.push({
+          "activeness": "off",
+          "room": "",
+          "routineID": "",
+          "username": req.body.username
+        })
+        device.save()
+      })
+    })
 
     req.session.user = {
       username: req.body.username,
@@ -246,7 +259,7 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
 
       if (matchedUser) {
         // Get the icon for the device
-        const icon = getDeviceIcon(device.deviceName); 
+        const icon = getDeviceIcon(device.deviceName);
         device.icon = icon;
 
         // CHeck if the classifyBy is set to 'category'
@@ -257,14 +270,14 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
           // JS spread operator to merge properties from two objects into a new object, which is then added to an array
           devicesGrouped[device.category].push({ ...device, ...matchedUser });
 
-        // Group devices by activeness
+          // Group devices by activeness
         } else if (classifyBy === 'activeness') {
           if (!devicesGrouped[matchedUser.activeness]) {
             devicesGrouped[matchedUser.activeness] = [];
           }
           devicesGrouped[matchedUser.activeness].push({ ...device, ...matchedUser });
 
-        // Default grouping by room
+          // Default grouping by room
         } else {
           if (!devicesGrouped[matchedUser.room]) {
             devicesGrouped[matchedUser.room] = [];
