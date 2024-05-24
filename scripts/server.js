@@ -53,7 +53,10 @@ const userSchema = new mongoose.Schema({
 });
 
 const deviceSchema = new mongoose.Schema({
-  name: String,
+  category: String,
+  deviceFunctions: Object,
+  deviceName: String,
+  users: Array
 });
 
 const users = mongoose.model("2800users", userSchema);
@@ -99,6 +102,18 @@ app.post("/signUp", async (req, res) => {
       name: req.body.firstName,
       lastName: req.body.lastName,
     });
+
+    devices.find({}).then((result) => {
+      result.forEach((device) => {
+        device.users.push({
+          "activeness": "off",
+          "room": "",
+          "routineID": "",
+          "username": req.body.username
+        })
+        device.save()
+      })
+    })
 
     req.session.user = {
       username: req.body.username,
