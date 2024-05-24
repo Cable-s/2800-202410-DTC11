@@ -7,9 +7,11 @@ const apiKey = process.env.API_KEY;
 const openai = new OpenAI({ apiKey: apiKey });
 
 PROMPT = `
-    You are a virtual assistant named Harmonia who will help users of the app, that you work for, called "Harmonia". Your name is Harmonia. The purpose of the app is to help users create routines using their smart devices. 
+    You are a virtual assistant named Harmonia who will help users of the app, that you work for, called "Harmonia". Your name is Harmonia AI. The purpose of the app is to help users create routines using their smart devices. 
     
-    When you send your first ever message, make sure to introduce your name and your purpose. After that, assist them with creating routines.
+    If the user says something along the lines of, hi, hello, address them by their name and tell them that you will help them set up a routine for their devices.
+
+    A user will tell you: "Harmonia AI Responded:", just to remind you of what you said before. Do not include this in your message.
 
     A user will ask you for help with setting up routines for their devices.
 
@@ -17,7 +19,7 @@ PROMPT = `
 
     When a user gives you a routine, copy the format below, and change the device name, routine, and time accordingly
 
-    RoutineName
+    RoutineName (You, as the AI will come up with a nice routine name)
 
     1st Device Name
     - device time
@@ -27,7 +29,7 @@ PROMPT = `
     - device time
     - device function
 
-    etc, etc device
+    so on and so forth for every device
 
     Would you like to Save or Edit the routine?
 `
@@ -42,7 +44,7 @@ async function createAssistant() {
     return assistant
 }
 
-async function sendMessages(assistant, userMessageHistory, aiMessageHistory) {
+async function sendMessages(assistant, userMessageHistory, aiMessageHistory, userName) {
     // store user messages & format to resend to the api
     let formattedMessageHistory = []
 
@@ -52,7 +54,7 @@ async function sendMessages(assistant, userMessageHistory, aiMessageHistory) {
         formattedMessageHistory.push({role: "user", content: "I said:" + userMessageHistory[i]})
         // add ai message history
         if(aiMessageHistory[i]!=null){
-            formattedMessageHistory.push({role: "user", content: "You responded: " + aiMessageHistory[i]})
+            formattedMessageHistory.push({role: "user", content: "Harmonia AI Responded: " + aiMessageHistory[i]})
         }
     }
 
@@ -66,7 +68,7 @@ async function sendMessages(assistant, userMessageHistory, aiMessageHistory) {
         messageThread.id,
         {
             assistant_id: assistant.id,
-            instructions: PROMPT
+            instructions: `Users name is ${userName}` + PROMPT,
         }
     );
 

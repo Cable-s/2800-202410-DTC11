@@ -294,12 +294,13 @@ let userMessageHistory = []
 let aiMessageHistory = []
 
 app.post("/sendMessage", isAuthenticated, async (req, res) => {
-  message = req.body.message
+  let userName = req.session.user.username // the users username
+  message = req.body.message // the message a user sends
   userMessageHistory.push(message) // store all the users messages in an array
 
   assistant = await createAssistant() // store the created assistant
 
-  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory)
+  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName)
   aiMessageHistory.push(gptResponse)
 
   res.json(gptResponse)
