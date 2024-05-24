@@ -535,6 +535,14 @@ app.post("/hidden", isAuthenticated, async (req, res) => {
   res.render("foundit.ejs")
 })
 
+app.get("/lights", (req, res) => {
+  res.render("lights.ejs")
+})
+
+app.get("/coffeemachine", (req, res) => {
+  res.render("coffeemachine.ejs")
+})
+
 // 404 catch route
 app.get("*", (req, res) => {
   res.render("404.ejs")
