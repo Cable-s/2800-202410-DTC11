@@ -32,50 +32,59 @@ PROMPT = `
     Would you like to Save or Edit the routine?
 `
 
-async function setUpGPT() {
+// create the assistant with the name, prompt, and model
+async function createAssistant() {
     const assistant = await openai.beta.assistants.create({
-        name: "Harmonia", // doesn't work here
-        instructions: PROMPT, // doesn't work here
+        name: "Harmonia",
+        instructions: PROMPT,
         model: "gpt-3.5-turbo",
     })
-    const thread = await openai.beta.threads.create()
-    return [assistant, thread]
+    return assistant
 }
 
-async function sendAndReceiveMessage(assistant, thread, allUserMessages) {
-    allUserMessages.forEach( async (messages)=>{ // create a thread for every single users message
-        const message = await openai.beta.threads.messages.create(
-            thread.id,
-            {
-                role: "user",
-                content: messages 
-            }
-        );
+async function sendMessages(assistant, userMessageHistory, aiMessageHistory) {
+    // store user messages & format to resend to the api
+    let formattedMessageHistory = []
 
-    })
 
-    // create the message
+    for(let i=0; i<userMessageHistory.length;i++){
+        // add user message history
+        formattedMessageHistory.push({role: "user", content: "I said:" + userMessageHistory[i]})
+        // add ai message history
+        if(aiMessageHistory[i]!=null){
+            formattedMessageHistory.push({role: "user", content: "You responded: " + aiMessageHistory[i]})
+        }
+    }
+
+    // add message to the thread
+    const messageThread = await openai.beta.threads.create({
+        messages: formattedMessageHistory,
+      });
 
     // send the message using polling
     let run = await openai.beta.threads.runs.createAndPoll(
-        thread.id,
+        messageThread.id,
         {
             assistant_id: assistant.id,
             instructions: PROMPT
         }
     );
 
-    // await the message response
+    // send gpt response
+    resp = await receiveResponse(run)
+    return resp
+}
+
+async function receiveResponse(run){
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(
             run.thread_id
         );
-        for (const message of messages.data.reverse()) { // error looks like its here
-            // console.log(messages.data)
+        for (const message of messages.data.reverse()) {
             console.log(message.content)
             if(message.role == "assistant"){
-                console.log(message.content[0].text.value)
-                return message.content[0].text.value
+                gptResponse = message.content[0].text.value
+                return gptResponse
             }
         }
     } else {
@@ -84,6 +93,6 @@ async function sendAndReceiveMessage(assistant, thread, allUserMessages) {
 }
 
 module.exports = {
-    setUpGPT,
-    sendAndReceiveMessage
+    createAssistant,
+    sendMessages
   };
