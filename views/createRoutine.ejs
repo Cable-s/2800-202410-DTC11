@@ -37,20 +37,37 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-secondary">Select Date</label>
                             <div class="flex justify-between justify-center mx-auto mt-2 overflow-scroll gap-1">
-                                <button id="mon"
+                                <button type="button" id="mon" data-day="Monday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Mon</button>
-                                <button id="tue"
+                                <button type="button" id="tue" data-day="Tuesday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Tue</button>
-                                <button id="wed"
+                                <button type="button" id="wed" data-day="Wednesday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Wed</button>
-                                <button id="thu"
+                                <button type="button" id="thu" data-day="Thursday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Thu</button>
-                                <button id="fri"
+                                <button type="button" id="fri" data-day="Friday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Fri</button>
-                                <button id="sat"
+                                <button type="button" id="sat" data-day="Saturday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Sat</button>
-                                <button id="sun"
+                                <button type="button" id="sun" data-day="Sunday"
                                     class="date-button px-3 py-1 rounded-full border border-gray-500 focus:outline-none focus:ring focus:ring-secondary">Sun</button>
+                            </div>
+                            <input type="hidden" name="activeDays" id="activeDays">
+                        </div>
+                        <!-- Device -->
+                        <div class="flex items-center justify-between p-3 border border-gray-500 rounded-md">
+                            <span class="text-secondary">Device 1</span>
+                            <div class="flex items-center space-x-2">
+                                <!-- Toggle Switch -->
+                                <label for="toggle1" class="flex items-center cursor-pointer">
+                                    <div class="relative">
+                                        <input id="toggle1" type="checkbox" class="sr-only">
+                                        <div class="block bg-gray-600 w-10 h-6 rounded-full"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition">
+                                        </div>
+                                    </div>
+                                </label>
+                                <button class="bg-secondary text-primary px-4 py-1 rounded-full">Edit</button>
                             </div>
                         </div>
                         <button type="submit"
@@ -60,6 +77,25 @@
                 </div>
             </div>
         </div>
-    </body>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const activeDaysInput = document.getElementById('activeDays');
+                const dateButtons = document.querySelectorAll('.date-button');
+                const selectedDays = [];
 
-    <%- include("bottom_navbar") %>
+                dateButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const day = button.getAttribute('data-day');
+                        if (selectedDays.includes(day)) {
+                            selectedDays.splice(selectedDays.indexOf(day), 1);
+                            button.classList.remove('bg-secondary', 'text-primary');
+                        } else {
+                            selectedDays.push(day);
+                            button.classList.add('bg-secondary', 'text-primary');
+                        }
+                        activeDaysInput.value = selectedDays.join(',');
+                    });
+                });
+            });
+        </script>
+    </body>

@@ -315,7 +315,7 @@ app.post('/create-routine', async (req, res) => {
     routineName,
     routineStart: convertToUnixTimestamp(routineStart),
     routineEnd: convertToUnixTimestamp(routineEnd),
-    activeDays: Array.isArray(activeDays) ? activeDays : [activeDays]
+    activeDays: activeDays.split(',') //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
   });
 
   try {
