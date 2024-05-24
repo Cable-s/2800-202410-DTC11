@@ -433,12 +433,12 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
 });
 
 //hidden admin route for beginning of the easter egg
-app.get("/admin", isAuthenticated, (req, res) => {
+app.get("/hidden", isAuthenticated, (req, res) => {
   res.render("admin.ejs")
 });
 
 // post route for the admin route when finding the hidden button
-app.post("/admin", isAuthenticated, async (req, res) => {
+app.post("/hidden", isAuthenticated, async (req, res) => {
   res.render("foundit.ejs")
 })
 
