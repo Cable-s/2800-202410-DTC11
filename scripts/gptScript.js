@@ -44,7 +44,7 @@ async function createAssistant() {
     return assistant
 }
 
-async function sendMessages(assistant, userMessageHistory, aiMessageHistory, userName) {
+async function sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices) {
     // store user messages & format to resend to the api
     let formattedMessageHistory = []
 
@@ -68,7 +68,7 @@ async function sendMessages(assistant, userMessageHistory, aiMessageHistory, use
         messageThread.id,
         {
             assistant_id: assistant.id,
-            instructions: `Users name is ${userName}` + PROMPT,
+            instructions: `Users name is ${userName}` + `All the user devices: ${alluserDevices}` + PROMPT,
         }
     );
 

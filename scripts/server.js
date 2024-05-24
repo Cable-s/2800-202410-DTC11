@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
 const { createAssistant, sendMessages } = require("./gptScript.js");
+const { parseSchema} = require("./getUserDevices.js");
 
 
 const app = express();
@@ -415,7 +416,9 @@ app.get("/editFunction", isAuthenticated, (req, res) => {
   res.render("editFunction.ejs");
 });
 
-app.get("/harmonia-dm", isAuthenticated, (req, res) => {
+app.get("/harmonia-dm", isAuthenticated, async (req, res) => {
+  let userName = req.session.user.username // the users username
+  alluserDevices = await parseSchema(devices, userName)
   chatBotPath = path.join(__dirname, '..', 'views', 'chatBot.html');
   res.sendFile(chatBotPath)
 });
@@ -430,7 +433,7 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
 
   assistant = await createAssistant() // store the created assistant
 
-  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName)
+  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices)
   aiMessageHistory.push(gptResponse)
 
   res.json(gptResponse)
