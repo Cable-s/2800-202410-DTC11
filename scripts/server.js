@@ -297,7 +297,8 @@ const routineSchema = new mongoose.Schema({
   routineName: String,
   routineStart: String,
   routineEnd: String,
-  activeDays: [String] // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
+  activeDays: [String], // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
+  userName: String
 });
 
 const Routine = mongoose.model('Routine', routineSchema);
@@ -315,7 +316,8 @@ app.post('/create-routine', async (req, res) => {
     routineName,
     routineStart: convertToUnixTimestamp(routineStart),
     routineEnd: convertToUnixTimestamp(routineEnd),
-    activeDays: activeDays.split(',') //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
+    activeDays: activeDays.split(','), //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
+    userName: req.session.user.username
   });
 
   try {
