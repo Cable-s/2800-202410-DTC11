@@ -200,8 +200,31 @@ function isAuthenticated(req, res, next) {
 }
 
 // Home page
-app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home");
+app.get("/home", isAuthenticated, async (req, res) => {
+  let usersDevices = new Array()
+  let username = req.session.user.username;
+  console.log(username);
+  
+  devices.find({}).then(async (result) => {
+    result.forEach(async (device) => {
+      console.log(device.deviceName)
+
+      const matchedUser = await device.users.find(user => user.username === username);
+      if (matchedUser != undefined && matchedUser.username == username) {
+        const icon = getDeviceIcon(device.deviceName);
+        usersDevices.push({
+          name: device.deviceName,
+          icon: icon,
+          matchedUser
+        })
+      }
+    })
+
+    
+    const allUsersDevices = await usersDevices
+    // console.log(allUsersDevices)
+    res.render("home.ejs", {allUsersDevices}); 
+  })
 });
 
 // Icon mapping function
