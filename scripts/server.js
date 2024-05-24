@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
 const { createAssistant, sendMessages } = require("./gptScript.js");
+const { parseSchema} = require("./getUserDevices.js");
 
 
 const app = express();
@@ -111,11 +112,17 @@ app.post("/signUp", async (req, res) => {
       lastName: req.body.lastName,
     });
 
+
     devices.find({}).then((result) => {
       result.forEach((device) => {
+        let functionValues = {}
+        Object.keys(device.deviceFunctions).forEach((func) => {
+          functionValues[func] = "0"
+        })
         device.users.push({
           "activeness": "off",
           "room": "",
+          "functionValues": functionValues,
           "routineID": "",
           "username": req.body.username
         })
@@ -437,6 +444,7 @@ app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
 });
 
+
 app.get("/deviceRoutines", isAuthenticated, (req, res) => {
   res.render("deviceRoutines.ejs");
 });
@@ -457,11 +465,48 @@ app.get("/createFunction", isAuthenticated, (req, res) => {
   res.render("createFunction.ejs");
 });
 
+const routineSchema = new mongoose.Schema({
+  routineName: String,
+  routineStart: String,
+  routineEnd: String,
+  activeDays: [String], // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
+  userName: String
+});
+
+const Routine = mongoose.model('Routine', routineSchema);
+
+app.post('/create-routine', async (req, res) => {
+  const { routineName, routineStart, routineEnd, activeDays } = req.body;
+
+  // Convert time to Unix timestamp (seconds since midnight). for example 1 am would be represented as 3600 and 1:30 am would be 5400
+  const convertToUnixTimestamp = (time) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 3600 + minutes * 60;
+  };
+
+  const routine = new Routine({
+    routineName,
+    routineStart: convertToUnixTimestamp(routineStart),
+    routineEnd: convertToUnixTimestamp(routineEnd),
+    activeDays: activeDays.split(','), //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
+    userName: req.session.user.username
+  });
+
+  try {
+    await routine.save();
+    res.redirect('/deviceRoutines');
+  } catch (error) {
+    res.status(500).send('Error saving routine: ' + error.message);
+  }
+});
+
 app.get("/editFunction", isAuthenticated, (req, res) => {
   res.render("editFunction.ejs");
 });
 
-app.get("/harmonia-dm", isAuthenticated, (req, res) => {
+app.get("/harmonia-dm", isAuthenticated, async (req, res) => {
+  let userName = req.session.user.username // the users username
+  alluserDevices = await parseSchema(devices, userName)
   chatBotPath = path.join(__dirname, '..', 'views', 'chatBot.html');
   res.sendFile(chatBotPath)
 });
@@ -476,7 +521,7 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
 
   assistant = await createAssistant() // store the created assistant
 
-  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName)
+  gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices)
   aiMessageHistory.push(gptResponse)
 
   res.json(gptResponse)
