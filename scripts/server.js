@@ -424,13 +424,11 @@ app.get("/connectedRooms", isAuthenticated, (req, res) => {
 
       const matchedUser = await device.users.find(user => user.username === username);
       if (matchedUser != undefined && matchedUser.username == username) {
-        console.log(matchedUser)
         userDeviceRooms.push(matchedUser.room)
       }
     })
     
     const allUsersRooms = await userDeviceRooms
-    console.log(allUsersRooms)
     res.render("connectedRooms.ejs", {allUsersRooms});
   });
 });
