@@ -89,8 +89,9 @@
       console.log("2")
       e = e || window.event;
       // get the mouse cursor position at startup:
-      pos3 = e.clientX;
-      pos4 = e.clientY;
+      pos3 = e.touches[0].clientX;
+      pos4 = e.touches[0].clientY;
+      console.log(e)
       document.ontouchend = closeDragElementMobile;
       // call a function whenever the cursor moves:
       document.ontouchmove = elementDragMoblie;
