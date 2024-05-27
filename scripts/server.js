@@ -129,7 +129,7 @@ app.post("/signUp", async (req, res) => {
       result.forEach((device) => {
         let functionValues = {}
         Object.keys(device.deviceFunctions).forEach((func) => {
-          functionValues[func] = "0"
+          functionValues[func] = 0
         })
         device.users.push({
           "activeness": "off",
