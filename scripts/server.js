@@ -10,7 +10,8 @@ const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
 const { createAssistant, sendMessages } = require("./gptScript.js");
-const { parseSchema} = require("./getUserDevices.js");
+const { parseSchema } = require("./getUserDevices.js");
+const { readGptResponse, createRoutine } = require("./createRoutine.js");
 
 
 const app = express();
@@ -64,8 +65,19 @@ const deviceSchema = new mongoose.Schema({
   users: Array
 });
 
+const routineSchema = new mongoose.Schema({
+  routineName: String,
+  routineStart: Number,
+  routineEnd: Number,
+  activeDays: Array,
+  userName: String,
+  active: Boolean,
+  devices: Object
+})
+
 const users = mongoose.model("2800users", userSchema);
 const devices = mongoose.model("devices", deviceSchema);
+const routines = mongoose.model("routines", routineSchema);
 
 // create the session/cookie
 app.use(
@@ -427,16 +439,38 @@ let userMessageHistory = []
 let aiMessageHistory = []
 
 app.post("/sendMessage", isAuthenticated, async (req, res) => {
-  let userName = req.session.user.username // the users username
-  message = req.body.message // the message a user sends
-  userMessageHistory.push(message) // store all the users messages in an array
+  // the users username
+  let userName = req.session.user.username
+  // the message a user sends
+  message = req.body.message
 
-  assistant = await createAssistant() // store the created assistant
+  // store all the users messages in an array
+  userMessageHistory.push(message)
+
+  // store the created assistant
+  assistant = await createAssistant()
 
   gptResponse = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices)
-  aiMessageHistory.push(gptResponse)
 
+
+  // store ai responses
+  aiMessageHistory.push(gptResponse)
+  // output the responses as a json (to the user sending the request)
   res.json(gptResponse)
+
+  // if the user says save, save the value as json
+  if (message.toLowerCase().includes("save")) {
+    // invoke the ai to save the value as a json
+    userMessageHistory.push("Save as json")
+    gptResponseJson = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices)
+    try {
+      newRoutine = readGptResponse(gptResponseJson, userName)
+      createRoutine(newRoutine, routines)
+    } catch (err) {
+      console.log(err)
+    }
+
+  }
 });
 
 //hidden admin route for beginning of the easter egg
