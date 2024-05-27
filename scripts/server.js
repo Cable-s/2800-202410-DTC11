@@ -556,6 +556,10 @@ app.get("/coffeemachine", (req, res) => {
   res.render("coffeemachine.ejs")
 })
 
+app.get("/addDevice", isAuthenticated, (req, res) => {
+  res.render("addDevice.ejs")
+})
+
 // 404 catch route
 app.get("*", (req, res) => {
   res.render("404.ejs")
