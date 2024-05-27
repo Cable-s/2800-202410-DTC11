@@ -10,7 +10,8 @@ const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
 const { createAssistant, sendMessages } = require("./gptScript.js");
-const { parseSchema} = require("./getUserDevices.js");
+const { parseSchema } = require("./getUserDevices.js");
+const { updateRoutineActiveness } = require("./checkRoutine.js");
 
 
 const app = express();
@@ -64,6 +65,17 @@ const deviceSchema = new mongoose.Schema({
   users: Array
 });
 
+const routineSchema = new mongoose.Schema({
+  routineName: String,
+  routineStart: Number,
+  routineEnd: Number,
+  activeDays: Array,
+  userName: String,
+  active: Boolean,
+  devices: Object
+});
+
+const Routine = mongoose.model('Routine', routineSchema);
 const users = mongoose.model("2800users", userSchema);
 const devices = mongoose.model("devices", deviceSchema);
 
@@ -210,8 +222,13 @@ function isAuthenticated(req, res, next) {
 app.get("/home", isAuthenticated, async (req, res) => {
   let usersDevices = new Array()
   let username = req.session.user.username;
-  console.log(username);
-  
+  // console.log(username);
+
+  // fetch routine data and update active boolean status based on current time
+  const routines = await Routine.find({ userName: username });
+  const updatedRoutines = updateRoutineActiveness(routines);
+
+
   devices.find({}).then(async (result) => {
     result.forEach(async (device) => {
       console.log(device.deviceName)
@@ -227,10 +244,8 @@ app.get("/home", isAuthenticated, async (req, res) => {
       }
     })
 
-    
-    const allUsersDevices = await usersDevices
-    // console.log(allUsersDevices)
-    res.render("home.ejs", {allUsersDevices}); 
+
+    res.render("home.ejs", { allUsersDevices: usersDevices, routines: updatedRoutines });
   })
 });
 
@@ -413,38 +428,45 @@ app.get("/profile", isAuthenticated, (req, res) => {
   });
 });
 
-app.get("/connectedRooms", isAuthenticated, (req, res) => {
-  let userDeviceRooms = new Array()
-  let username = req.session.user.username;
-  console.log(username);
-  
-  devices.find({}).then(async (result) => {
-    result.forEach(async (device) => {
-      console.log(device.deviceName)
+// app.get("/connectedRooms", isAuthenticated, (req, res) => {
+//   let userDeviceRooms = new Array()
+//   let username = req.session.user.username;
+//   console.log(username);
 
-      const matchedUser = await device.users.find(user => user.username === username);
-      if (matchedUser != undefined && matchedUser.username == username) {
-        userDeviceRooms.push(matchedUser.room)
-      }
-    })
-    
-    const allUsersRooms = await userDeviceRooms
-    res.render("connectedRooms.ejs", {allUsersRooms});
-  });
-});
+//   devices.find({}).then(async (result) => {
+//     result.forEach(async (device) => {
+//       console.log(device.deviceName)
 
-app.post("/connectedRooms", async (req, res) => {
-  const selectedRoom = req.body.room;
-  console.log(selectedRoom);
-})
+//       const matchedUser = await device.users.find(user => user.username === username);
+//       if (matchedUser != undefined && matchedUser.username == username) {
+//         userDeviceRooms.push(matchedUser.room)
+//       }
+//     })
+
+//     const allUsersRooms = await userDeviceRooms
+//     res.render("connectedRooms.ejs", {allUsersRooms});
+//   });
+// });
+
+// app.post("/connectedRooms", async (req, res) => {
+//   const selectedRoom = req.body.room;
+//   console.log(selectedRoom);
+// })
 
 app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
 });
 
 
-app.get("/deviceRoutines", isAuthenticated, (req, res) => {
-  res.render("deviceRoutines.ejs");
+app.get("/deviceRoutines", isAuthenticated, async (req, res) => {
+  try {
+    const routines = await Routine.find({ userName: req.session.user.username });
+    // checks if active should be true or false
+    const updatedRoutines = updateRoutineActiveness(routines);
+    res.render("deviceRoutines", { routines: updatedRoutines });
+  } catch (error) {
+    res.status(404).send('Error fetching routines: ' + error.message);
+  }
 });
 
 app.get("/createRoutine", isAuthenticated, (req, res) => {
@@ -462,20 +484,6 @@ app.get("/deviceInfo", isAuthenticated, (req, res) => {
 app.get("/createFunction", isAuthenticated, (req, res) => {
   res.render("createFunction.ejs");
 });
-
-const routineSchema = new mongoose.Schema({
-  routineName: String,
-  routineStart: String,
-  routineEnd: String,
-  activeDays: [String], // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
-  userName: String,
-  active: {
-    type: Boolean,
-    default: false
-  }
-});
-
-const Routine = mongoose.model('Routine', routineSchema);
 
 app.post('/create-routine', async (req, res) => {
   const { routineName, routineStart, routineEnd, activeDays } = req.body;
@@ -499,7 +507,7 @@ app.post('/create-routine', async (req, res) => {
     await routine.save();
     res.redirect('/deviceRoutines');
   } catch (error) {
-    res.status(500).send('Error saving routine: ' + error.message);
+    res.status(404).send('Error saving routine: ' + error.message);
   }
 });
 
