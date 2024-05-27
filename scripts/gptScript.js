@@ -19,7 +19,11 @@ PROMPT = `
 
     When a user gives you a routine, copy the format below, and change the device name, routine, and time accordingly
 
-    RoutineName (You, as the AI will come up with a nice routine name)
+    RoutineName (You, as Harmonia will come up with a nice routine name)
+    Routine Start Time:
+    Routine End Time:
+
+    Routine Active Days:
 
     1st Device Name
     - device time
@@ -29,9 +33,26 @@ PROMPT = `
     - device time
     - device function
 
-    so on and so forth for every device
+    So on and so forth for every device
 
+    Then say:
     Would you like to Save or Edit the routine?
+
+    If a user says "Save", tell the user (by their name) that the routine is saved and the routine page was updated with the new routines.
+
+    If a user says "Save as json", you will send the response in this format, changing the values to match the created routine. The routine time should be unix, like 54900 seconds represents 15.25, which represents 3:15pm:
+    "routineName": "Routine Name created",
+        "routineStart": 54900,
+        "routineEnd": 62000,
+        "activeDays": ["Monday", "Tuesday"],
+        "userName": "Username here",
+        "active": false,
+        "devices": {
+            "deviceName": {
+                "functionName": "",
+                "functionName": "",
+                "active": false
+            }
 `
 
 // create the assistant with the name, prompt, and model
@@ -83,7 +104,6 @@ async function receiveResponse(run){
             run.thread_id
         );
         for (const message of messages.data.reverse()) {
-            console.log(message.content)
             if(message.role == "assistant"){
                 gptResponse = message.content[0].text.value
                 return gptResponse
