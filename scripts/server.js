@@ -475,15 +475,6 @@ app.get("/createFunction", isAuthenticated, (req, res) => {
   res.render("createFunction.ejs");
 });
 
-const routineSchema = new mongoose.Schema({
-  routineName: String,
-  routineStart: String,
-  routineEnd: String,
-  activeDays: [String], // array of weekdays that the device will be active for e.g., ["Monday", "Wednesday", "Friday"]
-  userName: String
-});
-
-const Routine = mongoose.model('Routine', routineSchema);
 
 app.post('/create-routine', async (req, res) => {
   const { routineName, routineStart, routineEnd, activeDays } = req.body;
