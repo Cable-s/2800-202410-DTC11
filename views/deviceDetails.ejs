@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= device.deviceName %> Control Panel</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D2B32',
+                        secondary: '#B2EBF2',
+                        background: '#222229',
+                        accent: 'white'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-background text-accent">
+    <%- include("top_navbar.ejs") %>
+    <main class="flex flex-col items-center justify-center min-h-screen">
+        <!-- Title Section -->
+        <section class="mb-8 text-center">
+            <h1 class="text-3xl font-bold"><%= device.deviceName %> Control Panel</h1>
+        </section>
+
+        <!-- Icon Section -->
+        <section class="mb-8">
+            <div class="w-48 h-48 rounded-full shadow-lg flex items-center justify-center bg-primary text-secondary">
+                <i class="fas <%= device.icon %> fa-4x text-secondary"></i>
+            </div>
+        </section>
+
+        <!-- Section for device functions and controls -->
+        <section class="w-full px-4">
+            <% for (let functionName in device.deviceFunctions) { %>
+                <div class="mb-8">
+                    <!-- Display function name and description -->
+                    <h2 class="text-2xl font-bold"><%= functionName %></h2>
+                    <p class="text-sm text-gray-400"><%= device.deviceFunctions[functionName].desc %></p>
+                    <!-- If the function type is slider than display slider -->
+                    <% if (device.deviceFunctions[functionName].type === 'slider') { %>
+                        <!-- Form to update the database -->
+                        <form action="/updateDeviceFunction" method="POST" class="flex align-items">
+                            <!-- Hidden inputs to pass device name and function -->
+                            <input type="hidden" name="deviceName" value="<%= device.deviceName %>">
+                            <input type="hidden" name="functionName" value="<%= functionName %>">
+                            <input type="range" name="functionValue" min="0" max="100" value="<%= userDevice.functionValues[functionName] %>" class="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer" onchange="this.form.submit()" oninput="updateSliderValue('<%= functionName %>', this.value)">
+                            <span class="ml-1 text-base" id="slider-value-<%= functionName %>"><%= userDevice.functionValues[functionName] %></span>
+                        </form>
+                        <!-- If the function type is toggle -->
+                    <% } else if (device.deviceFunctions[functionName].type === 'toggle') { %>
+                        <!-- Form to update database -->
+                        <form action="/updateDeviceFunction" method="POST">
+                            <input type="hidden" name="deviceName" value="<%= device.deviceName %>">
+                            <input type="hidden" name="functionName" value="<%= functionName %>">
+                            <label class="switch">
+                                <!-- 
+                                    * Toggle switch to turn on and off the device.
+                                    * I found this code on flowbite.com.
+
+                                    * @see https://flowbite.com/docs/forms/toggle/
+                                 -->
+                                <input class="sr-only peer" type="checkbox" name="functionValue" value="on" <%= userDevice.functionValues[functionName] === 'on' ? 'checked' : '' %> onchange="this.form.submit()">
+                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-secondary"></div>
+                                <span class="slider round"></span>
+                            </label>
+                        </form>
+                    <% } %>
+                </div>
+            <% } %>
+        </section>
+    </main>
+    <%- include("bottom_navbar.ejs") %>
+    <script>
+        // Function to display the dlider value
+        function updateSliderValue(functionName, value) {
+            document.getElementById('slider-value-' + functionName).textContent = value;
+        }
+    </script>
+</body>
+</html>

@@ -23,9 +23,8 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<%- include("top_navbar.ejs") %>
-
     <body class="bg-background">
+        <%- include("top_navbar.ejs") %>
         <main class="flex-1 mt-16 mb-10 mx-2">
             <!-- Filter section -->
             <section class="w-full py-4">
@@ -58,6 +57,7 @@
                 <div class="container px-4">
                     <div class="grid gap-6">
                         <div class="grid gap-2">
+                            <!-- Header dynamically changes based on the filter applied -->
                             <h1 class="text-2xl text-accent font-bold">
                                 <%= classifyBy==='category' ? 'Device Categories' : classifyBy==='activeness'
                                     ? 'Device Status' : 'Room List' %>
@@ -73,33 +73,43 @@
             <!-- Devices grouped by the selected criterion -->
             <section id="deviceSections" class="mx-4">
                 <% for (let group in devicesGrouped) { %>
+                    <!-- Section for each group of devices -->
                     <section id="<%= group %>_devices" class="w-full bg-primary mt-4 mb-4 py-8 rounded-2xl">
                         <div class="container px-4">
                             <div class="grid grid-cols-1 gap-6">
                                 <div class="grid gap-2">
+                                    <!-- Group header displaying the roup name -->
                                     <h2 class="text-2xl font-bold text-accent">
+                                        <!-- Capitalize the first letter of the group name -->
                                         <%= group.charAt(0).toUpperCase() + group.slice(1) %>
                                     </h2>
+                                    <!-- Description of the devices in the group -->
                                     <p class="text-accent">Your devices in the <%= group.charAt(0).toUpperCase() +
                                             group.slice(1) %>
+                                            <!-- Conditional statement to display 'category', 'status', or 'room' based on the filter applied -->
                                             <%= classifyBy==='category' ? 'category' : classifyBy==='activeness'
                                                 ? 'status' : 'room' %>.
                                     </p>
                                 </div>
+                                <!-- section for listing the devices in a flexbox layout -->
                                 <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
                                     <% devicesGrouped[group].forEach(device=> { %>
-                                        <a href="/<%=device.deviceName%>">
+                                        <!-- Link the device Details page for clicked device -->
+                                        <a href="/deviceDetails?device=<%= device.deviceName %>">
                                             <div class="text-center p-4 basis-1/6">
+                                                <!-- Display icons dynamically for each devices -->
                                                 <div
                                                     class="bg-background border-4 border-secondary/50 shadow-2xl shadow-secondary hover:bg-background hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
+                                                    <!-- Device icon -->
                                                     <i class="fas <%= device.icon %> text-secondary"></i>
                                                 </div>
                                                 <div class="text-accent text-xs">
+                                                    <!-- Device name -->
                                                     <%= device.deviceName %>
                                                 </div>
                                             </div>
                                         </a>
-                                    <% }) %>
+                                        <% }) %>
                                 </section>
                             </div>
                         </div>
