@@ -23,10 +23,11 @@
 </head>
 <body class="bg-background text-accent">
     <%- include("top_navbar.ejs") %>
-    <main class="flex flex-col items-center justify-center min-h-screen">
+    <main class="flex flex-col items-center justify-center">
         <!-- Title Section -->
         <section class="mb-8 text-center">
-            <h1 class="text-3xl font-bold"><%= device.deviceName %> Control Panel</h1>
+            <h1 class="text-3xl font-bold"><%= device.deviceName.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + device.deviceName.replace(/([A-Z])/g, ' $1').slice(1) %> Control Panel</h1>
+
         </section>
 
         <!-- Icon Section -->
@@ -41,8 +42,13 @@
             <% for (let functionName in device.deviceFunctions) { %>
                 <div class="mb-8">
                     <!-- Display function name and description -->
-                    <h2 class="text-2xl font-bold"><%= functionName %></h2>
-                    <p class="text-sm text-gray-400"><%= device.deviceFunctions[functionName].desc %></p>
+                    <!-- 
+                        * Replace the device name with spaces before capital letters and capitalize the first letter.
+                        * I wrote this ejs code by modifying this code from stackoverflow.com.
+                        * @see https://stackoverflow.com/questions/7225407/convert-camelcasetext-to-title-case-text
+                    -->
+                    <h2 class="text-2xl font-bold"><%= functionName.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + functionName.replace(/([A-Z])/g, ' $1').slice(1) %></h2>
+                    <p class="text-gray-400"><%= device.deviceFunctions[functionName].desc %></p>
                     <!-- If the function type is slider than display slider -->
                     <% if (device.deviceFunctions[functionName].type === 'slider') { %>
                         <!-- Form to update the database -->

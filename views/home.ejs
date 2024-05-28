@@ -31,7 +31,7 @@
             <div class="container px-4">
                 <div class="grid gap-6">
                     <div class="grid gap-2">
-                        <h1 class="text-2xl text-accent font-bold">Welcome Home,  <span class="text-3xl"><%= username %>!</span></h1>
+                        <h1 class="text-2xl text-accent font-bold">Welcome Home, <%= username %>! </h1>
                     </div>
                     <div class="overflow-x-auto">
                         <div class="flex gap-4"></div>
@@ -56,7 +56,7 @@
                 <div class="grid gap-6">
                     <div class="grid gap-2">
                         <h2 class="text-2xl font-bold text-accent">Daily Routines</h2>
-                        <p class="text-accent">Your scheduled routines for today.</p>
+                        <p class="text-gray-300">Your scheduled routines for today.</p>
                     </div>
                     <div class="grid gap-4">
                         <% if (allUsersRoutine.length > 0) { %>
@@ -67,8 +67,8 @@
                                         <polyline points="12 6 12 12 16 14"></polyline>
                                     </svg>
                                     <div class="flex-1">
-                                        <p class="font-medium"><%= routine.name %></p>
-                                        <p class="text-sm text-gray-500"><%= Math.round(routine.start/3600) %>:00 - <%= Math.round(routine.end/3600) %>:00</p>
+                                        <p><%= routine.name %></p>
+                                        <p class="text-gray-500"><%= Math.round(routine.start/3600) %>:00 - <%= Math.round(routine.end/3600) %>:00</p>
                                     </div>
                                 </div>
                             <% }) %>
@@ -86,7 +86,7 @@
                 <div class="grid gap-6">
                     <div class="grid gap-2">
                         <h2 class="text-2xl font-bold text-accent tracking-tight">Active Devices</h2>
-                        <p class="text-accent">Devices currently in use in your home.</p>
+                        <p class="text-gray-300">Devices currently in use in your home.</p>
                     </div>
                     <div class="grid gap-4">
                         <% var count = 0%>
@@ -96,7 +96,7 @@
                                 <div class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm font-semibold">
                                     <i class="fas <%= device.icon %> text-background"></i>
                                     <div class="flex-1">
-                                        <p class="font-medium"><%= device.name %></p>
+                                        <p class=""><%= device.name.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + device.name.replace(/([A-Z])/g, ' $1').slice(1) %></p>
                                     </div>
                                 </div>
                             <% } %>
