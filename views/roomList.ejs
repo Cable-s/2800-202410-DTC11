@@ -88,7 +88,7 @@
                                 </div>
                                 <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
                                     <% devicesGrouped[group].forEach(device=> { %>
-                                        <a href="/<%=device.deviceName%>">
+                                        <a href="/deviceDetails?device=<%= device.deviceName %>">
                                             <div class="text-center p-4 basis-1/6">
                                                 <div
                                                     class="bg-background border-4 border-secondary/50 shadow-2xl shadow-secondary hover:bg-background hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
