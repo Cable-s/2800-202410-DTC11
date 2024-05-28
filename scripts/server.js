@@ -516,14 +516,8 @@ app.get("/editFunction", isAuthenticated, (req, res) => {
 });
 
 app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
-  console.log("Form Data:", req.body); // Log the incoming form data for debugging
-
   try {
-    let addedDevices = sessionStorage.getItem("addedDevices");
-    addedDevices = JSON.parse(addedDevices);
-    addedDevices.push(req.body);
-    sessionStorage.setItem("addedDevices", JSON.stringify(addedDevices));
-    render("createRoutine.ejs")
+    res.render("createRoutine.ejs")
   } catch (error) {
     console.error("Error updating device:", error);
     res.status(500).send("Server error");

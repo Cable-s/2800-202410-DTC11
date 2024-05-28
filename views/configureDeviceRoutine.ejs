@@ -1,8 +1,8 @@
 <%- include("top_navbar") %>
   
   <br><br><br><br>
-  <!-- post route for device configuration -->
-  <form action="/addConfiguredDevice" method="POST" class="m-[40px]">
+  <!-- post route for device configuration-->
+  <form action="/addConfiguredDevice" method="POST" id="deviceConfigForm" class="m-[40px]">
     <!-- find each device you want to configure, should only be one, and find each function for the device-->
   <% devices.forEach((device) => {Object.keys(device.deviceFunctions).forEach((input) => { %>
     <!-- is that functions input type a slider -->
@@ -57,4 +57,18 @@
       });
     });
   });
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', () => {
+      let formData = new FormData(document.getElementById("deviceConfigForm"));
+      let storedDevice = {}
+      console.log(formData)
+      formData.forEach((value, key) => {
+        storedDevice[key] = value
+      })
+      let addedDevices = localStorage.getItem("addedDevices");
+      parsedAddedDevices = JSON.parse(addedDevices);
+      parsedAddedDevices.push(storedDevice);
+      localStorage.setItem("addedDevices", JSON.stringify(parsedAddedDevices));
+      });
+    });
 </script>
