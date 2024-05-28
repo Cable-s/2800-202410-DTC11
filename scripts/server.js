@@ -515,6 +515,29 @@ app.get("/editFunction", isAuthenticated, (req, res) => {
   res.render("editFunction.ejs");
 });
 
+app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
+  console.log("Form Data:", req.body); // Log the incoming form data for debugging
+
+  try {
+    const { deviceName, ...deviceFunctions } = req.body; // Destructure deviceName and deviceFunctions from req.body
+
+    let device = await devices.findOne({ deviceName: deviceName });
+
+    if (device) {
+      Object.keys(deviceFunctions).forEach((func) => {
+        device.deviceFunctions[func] = deviceFunctions[func];
+      });
+      await device.save();
+      res.redirect("/deviceRoutines");
+    } else {
+      res.status(404).send("Device not found");
+    }
+  } catch (error) {
+    console.error("Error updating device:", error);
+    res.status(500).send("Server error");
+  }
+});
+
 app.get("/harmonia-dm", isAuthenticated, async (req, res) => {
   let userName = req.session.user.username // the users username
   alluserDevices = await parseSchema(devices, userName)
