@@ -519,19 +519,11 @@ app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
   console.log("Form Data:", req.body); // Log the incoming form data for debugging
 
   try {
-    const { deviceName, ...deviceFunctions } = req.body; // Destructure deviceName and deviceFunctions from req.body
-
-    let device = await devices.findOne({ deviceName: deviceName });
-
-    if (device) {
-      Object.keys(deviceFunctions).forEach((func) => {
-        device.deviceFunctions[func] = deviceFunctions[func];
-      });
-      await device.save();
-      res.redirect("/deviceRoutines");
-    } else {
-      res.status(404).send("Device not found");
-    }
+    let addedDevices = sessionStorage.getItem("addedDevices");
+    addedDevices = JSON.parse(addedDevices);
+    addedDevices.push(req.body);
+    sessionStorage.setItem("addedDevices", JSON.stringify(addedDevices));
+    render("createRoutine.ejs")
   } catch (error) {
     console.error("Error updating device:", error);
     res.status(500).send("Server error");
@@ -648,11 +640,6 @@ app.post("/addDevice", isAuthenticated, async (req, res) => {
     formData: req.body,
     devices: await devices.find({ deviceName: req.body.deviceName }),
   })
-})
-
-app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
-  console.log(req.body)
-  let routine = await Routine.findOne({ userName: req.session.user.username })
 })
 
 // 404 catch route
