@@ -9,7 +9,7 @@
     <% if (device.deviceFunctions[input].type == "slider") { %> 
       <!-- tailwind slider input from https://flowbite.com/docs/forms/range/ -->
       <label id="<%= input %>Label" for="<%= input %>" class="block mx-auto mb-2 text-lg font-medium text-gray-900 dark:text-gray-900"><%= input %>: 50 </label>
-      <input id="<%= input %>" type="range" name="<%= input %>" value="50" min="0" max="100" onchange="inputValue = this.value; this.labels[0].innerHTML =  '<%= input %>' + ': ' + inputValue; console.log(this.value)" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input><br><br>
+      <input id="<%= input %>" type="range" name="<%= input %>" value="50" min="0" max="100" onchange="inputValue = this.value; this.labels[0].innerHTML =  '<%= input %>' + ': ' + inputValue;" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input><br><br>
       <!-- is that functions input type a toggle https://flowbite.com/docs/forms/toggle/-->
       <%} else if (device.deviceFunctions[input].type == "toggle") { %> 
         <!-- tailwind toggle input with some changes  -->
