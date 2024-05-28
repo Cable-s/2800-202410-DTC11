@@ -628,8 +628,8 @@ app.post("/addDevice", isAuthenticated, async (req, res) => {
 })
 
 app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
+  console.log(req.body)
   let routine = await Routine.findOne({ userName: req.session.user.username })
-  console.log(routine)
 })
 
 // 404 catch route
