@@ -4,17 +4,24 @@ const updateRoutineActiveness = (routines) => {
     const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds(); // current time in seconds since midnight
 
     routines.forEach(routine => {
-        // Check if today is an active day
+        // check if today is an active day
         if (!routine.activeDays.includes(currentDay)) {
             routine.active = false;
             return;
         }
 
-        // Check if the current time is between the start and end times
-        const routineStartSeconds = parseInt(routine.routineStart.split(':')[0]) * 3600 + parseInt(routine.routineStart.split(':')[1]) * 60;
-        const routineEndSeconds = parseInt(routine.routineEnd.split(':')[0]) * 3600 + parseInt(routine.routineEnd.split(':')[1]) * 60;
+        // check if the current time is between the start and end times
+        const routineStartSeconds = routine.routineStart;
+        const routineEndSeconds = routine.routineEnd;
 
-        routine.active = routineStartSeconds <= currentSeconds && currentSeconds < routineEndSeconds;
+        // Handle routines that span midnight
+        if (routineStartSeconds < routineEndSeconds) {
+            // routine within the same day
+            routine.active = routineStartSeconds <= currentSeconds && currentSeconds < routineEndSeconds;
+        } else {
+            // routine crosses midnight
+            routine.active = routineStartSeconds <= currentSeconds || currentSeconds < routineEndSeconds;
+        }
     });
 
     return routines;
