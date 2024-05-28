@@ -1,23 +1,60 @@
 <%- include("top_navbar") %>
   
   <br><br><br><br>
+  <!-- post route for device configuration -->
   <form action="/addConfiguredDevice" method="POST" class="m-[40px]">
+    <!-- find each device you want to configure, should only be one, and find each function for the device-->
   <% devices.forEach((device) => {Object.keys(device.deviceFunctions).forEach((input) => { %>
+    <!-- is that functions input type a slider -->
     <% if (device.deviceFunctions[input].type == "slider") { %> 
+      <!-- tailwind slider input from https://flowbite.com/docs/forms/range/ -->
       <label id="<%= input %>Label" for="<%= input %>" class="block mx-auto mb-2 text-lg font-medium text-gray-900 dark:text-gray-900"><%= input %>: 50 </label>
-      <input id="<%= input %>" type="range" name="<%= input %>" value="50" min="0" max="100" onchange="inputValue = this.value; this.labels[0].innerHTML =  '<%= input %>' + ': ' + inputValue" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input><br><br>
-      <% } %>
-      <% if (device.deviceFunctions[input].type == "toggle") { %> 
+      <input id="<%= input %>" type="range" name="<%= input %>" value="50" min="0" max="100" onchange="inputValue = this.value; this.labels[0].innerHTML =  '<%= input %>' + ': ' + inputValue;" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input><br><br>
+      <!-- is that functions input type a toggle https://flowbite.com/docs/forms/toggle/-->
+      <%} else if (device.deviceFunctions[input].type == "toggle") { %> 
+        <!-- tailwind toggle input with some changes  -->
         <label class="inline-flex items-center cursor-pointer">
-          <span class="me-3 text-lg font-medium text-gray-900 dark:text-gray-900"><%= input %></span>
-          <input name="<%= input %>" type="checkbox" value="0" onclick="this.checked ?  this.value = 1 : this.value = 0" class="sr-only peer">
-          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+          <span class="me-3 text-lg font-medium text-gray-900 dark:text-gray-900">
+            <%= input %>
+          </span>
+          <!-- when changing values to 0 it wont send it to push, so we had to change to this hack -->
+          <input type="hidden" name="<%= input %>" value="0"> <!-- Hidden input for default value -->
+          <input name="<%= input %>" type="checkbox" value="1" class="sr-only peer">
+          <!-- Toggle switch is a checkbox -->
+          <div
+            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+          </div>
         </label>
         <% } %>
-    <% })}) %>
+    <% }) %>
+    <!-- other form info we need but uesrs cant change -->
+        <input type="hidden" name="deviceName" value="<%= device.deviceName%>">
+        <input type="hidden" name="active" value="false">
+  <% }) %>
+  <!-- submit button -->
     <button type="submit"
     class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">
     Add Device</button>
   </form>
 
 <%- include("bottom_navbar.ejs") %>
+
+<script>
+  // check if the hidden input and checkbox are 0 and remove the hidden input. This is apart of the toggle hack above. This function was brought to us by chatGPT
+  // selects the form and for each form...
+  document.querySelectorAll('form').forEach(form => {
+    // add a submit event listener for processing oncee the form is submitted
+    form.addEventListener('submit', () => {
+      // select the hidden types within the form and for each hidden input...
+      form.querySelectorAll('input[type="hidden"]').forEach(hiddenInput => {
+        // select the checkbox within the form that has the same name as the hidden input
+        const checkbox = form.querySelector(`input[type="checkbox"][name="${hiddenInput.name}"]`);
+        // if the checkbox is true and checked
+        if (checkbox && checkbox.checked) {
+           // Remove the hidden input if the checkbox is checked
+          hiddenInput.remove();
+        }
+      });
+    });
+  });
+</script>
