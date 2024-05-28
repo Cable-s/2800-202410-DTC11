@@ -10,7 +10,7 @@ const nodemailer = require("nodemailer");
 const path = require("path")
 const bodyParser = require('body-parser');
 const { createAssistant, sendMessages } = require("./gptScript.js");
-const { parseSchema} = require("./getUserDevices.js");
+const { parseSchema } = require("./getUserDevices.js");
 
 
 const app = express();
@@ -211,7 +211,7 @@ app.get("/home", isAuthenticated, async (req, res) => {
   let usersDevices = new Array()
   let username = req.session.user.username;
   console.log(username);
-  
+
   devices.find({}).then(async (result) => {
     result.forEach(async (device) => {
       console.log(device.deviceName)
@@ -229,7 +229,7 @@ app.get("/home", isAuthenticated, async (req, res) => {
 
     const allUsersDevices = await usersDevices
     // console.log(allUsersDevices)
-    res.render("home.ejs", {allUsersDevices}); 
+    res.render("home.ejs", { allUsersDevices });
   })
 });
 
@@ -239,20 +239,21 @@ const deviceIcons = {
   lights: "fa-lightbulb",
   speaker: "fa-volume-up",
   clock: "fa-clock",
-  blind: "fa-blinds",
+  blind: "fa-person-booth",
   coffeemachine: "fa-coffee",
   washingmachine: "fa-tint",
   car: "fa-car",
   kettle: "fa-coffee",
   fridge: "fa-snowflake",
   thermostat: "fa-thermometer-half",
-  vacumcleaner: "fa-robot",
+  vacuumcleaner: "fa-robot",
   shower: "fa-shower",
   stove: "fa-fire",
   ringcamera: "fa-video",
   dishwasher: "fa-utensils",
   foodcooker: "fa-utensils",
   teslabot: "fa-robot",
+  ac: "fa-solid fa-wind",
   default: "fa-question-circle",
 };
 
@@ -329,6 +330,16 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
 // Device details page
 app.get('/deviceDetails', isAuthenticated, async (req, res) => {
   try {
+
+    // Get the username from the session
+    const username = req.session.user.username;
+    if (!username) {
+      throw new Error('Username not found in session');
+    }
+
+    // Get the device name from the query parameters
+    const deviceName = req.query.device;
+
     // Get the device name and username from the query parameters
     const device = await devices.findOne({ deviceName }).lean();
     if (!device) {
@@ -372,7 +383,7 @@ app.post('/updateDeviceFunction', isAuthenticated, async (req, res) => {
 
     // Update the specific function value for the user
     const updateQuery = {};
-    
+
     // Save the new function value to the user's functionValues object
     updateQuery[`users.${userIndex}.functionValues.${functionName}`] = functionValue;
 
@@ -480,7 +491,7 @@ app.get("/connectedRooms", isAuthenticated, (req, res) => {
   let userDeviceRooms = new Array()
   let username = req.session.user.username;
   console.log(username);
-  
+
   devices.find({}).then(async (result) => {
     result.forEach(async (device) => {
       console.log(device.deviceName)
@@ -490,9 +501,9 @@ app.get("/connectedRooms", isAuthenticated, (req, res) => {
         userDeviceRooms.push(matchedUser.room)
       }
     })
-    
+
     const allUsersRooms = await userDeviceRooms
-    res.render("connectedRooms.ejs", {allUsersRooms});
+    res.render("connectedRooms.ejs", { allUsersRooms });
   });
 });
 
