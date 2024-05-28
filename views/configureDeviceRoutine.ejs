@@ -1,11 +1,11 @@
 <%- include("top_navbar") %>
   
   <br><br><br><br>
-  <form class="m-[20px]">
+  <form action="/addConfiguredDevice" method="POST" class="m-[40px]">
   <% devices.forEach((device) => {Object.keys(device.deviceFunctions).forEach((input) => { %>
     <% if (device.deviceFunctions[input].type == "slider") { %> 
-      <label for="default-range" class="block mx-auto mb-2 text-lg font-medium text-gray-900 dark:text-gray-900">Default range</label>
-      <input id="<%=  %>>" type="range" value="50" min="0" max="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"><br><br>
+      <label id="<%= input %>Label" for="<%= input %>" class="block mx-auto mb-2 text-lg font-medium text-gray-900 dark:text-gray-900"><%= input %>: <% %></label>
+      <input id="<%= input %>" type="range" name="<%= input %>" value="50" min="0" max="100" onchange="console.log(self.value)" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"><br><br>
       <% } %>
     <% })}) %>
     <button type="submit"

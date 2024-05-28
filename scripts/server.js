@@ -624,8 +624,12 @@ app.post("/addDevice", isAuthenticated, async (req, res) => {
   res.render("configureDeviceRoutine.ejs", {
     formData: req.body,
     devices: await devices.find({ deviceName: req.body.deviceName }),
-    routines: await Routine.find({})
   })
+})
+
+app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
+  let routine = await Routine.findOne({ userName: req.session.user.username })
+  console.log(routine)
 })
 
 // 404 catch route
