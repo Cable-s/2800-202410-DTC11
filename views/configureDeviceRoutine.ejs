@@ -1,0 +1,16 @@
+<%- include("top_navbar") %>
+  
+  <br><br><br><br>
+  <form class="m-[20px]">
+  <% devices.forEach((device) => {Object.keys(device.deviceFunctions).forEach((input) => { %>
+    <% if (device.deviceFunctions[input].type == "slider") { %> 
+      <label for="default-range" class="block mx-auto mb-2 text-lg font-medium text-gray-900 dark:text-gray-900">Default range</label>
+      <input id="<%=  %>>" type="range" value="50" min="0" max="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"><br><br>
+      <% } %>
+    <% })}) %>
+    <button type="submit"
+    class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">
+    Add Device</button>
+  </form>
+
+<%- include("bottom_navbar.ejs") %>

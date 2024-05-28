@@ -621,7 +621,11 @@ app.get("/addDevice", isAuthenticated, async (req, res) => {
 })
 
 app.post("/addDevice", isAuthenticated, async (req, res) => {
-  res.send(req.body)
+  res.render("configureDeviceRoutine.ejs", {
+    formData: req.body,
+    devices: await devices.find({ deviceName: req.body.deviceName }),
+    routines: await Routine.find({})
+  })
 })
 
 // 404 catch route
