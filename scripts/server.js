@@ -227,7 +227,6 @@ app.get("/home", isAuthenticated, async (req, res) => {
       }
     })
 
-    
     const allUsersDevices = await usersDevices
     // console.log(allUsersDevices)
     res.render("home.ejs", {allUsersDevices}); 
@@ -323,6 +322,70 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
   } catch (err) {
     // Handle any errors that occur during the process
     console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Device details page
+app.get('/deviceDetails', isAuthenticated, async (req, res) => {
+  try {
+    // Get the device name and username from the query parameters
+    const device = await devices.findOne({ deviceName }).lean();
+    if (!device) {
+      return res.status(404).send('Device not found');
+    }
+
+    // Get the username from the session and match the username in the device's database
+    const userDevice = device.users.find(user => user.username === username);
+    if (!userDevice) {
+      return res.status(404).send('User device not found');
+    }
+
+    // get thhe icon for the device
+    const icon = getDeviceIcon(device.deviceName);
+    device.icon = icon;
+
+    res.render('deviceDetails', { device, userDevice });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/updateDeviceFunction', isAuthenticated, async (req, res) => {
+  try {
+    // Get the device name, function name, and function value from the request body
+    const { deviceName, functionName, functionValue } = req.body;
+    const username = req.session.user.username;
+
+    // Check if the username is not found in the session
+    if (!username) {
+      throw new Error('Username not found in session');
+    }
+
+    // Find the device and user to ensure we are updating the correct fields
+    const device = await devices.findOne({ deviceName, "users.username": username });
+
+    // Find the user index. used to locate the position of the user within the users array based on the username
+    // This helps creating the correct path to update within the users array
+    const userIndex = device.users.findIndex(user => user.username === username);
+
+    // Update the specific function value for the user
+    const updateQuery = {};
+    
+    // Save the new function value to the user's functionValues object
+    updateQuery[`users.${userIndex}.functionValues.${functionName}`] = functionValue;
+
+    // Update the device with the new function value
+    await devices.updateOne(
+      { deviceName, "users.username": username },
+      { $set: updateQuery }
+    );
+
+    // After updating the database, redirect the user back to the device details page
+    res.redirect(`/deviceDetails?device=${deviceName}`);
+  } catch (err) {
+    console.error(err);
     res.status(500).send('Server error');
   }
 });
