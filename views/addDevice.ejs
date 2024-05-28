@@ -1,3 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonia</title>
+    <script
+        src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D2B32',
+                        secondary: '#B2EBF2',
+                        background: '#222229',
+                        accent: 'white'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
 <%- include("top_navbar.ejs") %>
 
     <body class="bg-background">
@@ -63,7 +88,15 @@
                                 </div>
                                 <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
                                     <% devicesGrouped[group].forEach(device=> { %>
-                                        <a href="/<%=device.deviceName%>">
+                                        <a onclick="document.getElementById('<%= device.deviceName %>').click()">
+                                        <form action="/addDevice" method="POST">
+                                            <button type="submit" class="hidden" id="<%= device.deviceName %>"></button>
+                                            <input type="hidden" name="deviceName" value="<%= device.deviceName %>">
+                                            <input type="hidden" name="icon" value="<%= device.icon %>">
+                                            <input type="hidden" name="room" value="<%= device.room %>">
+                                            <input type="hidden" name="category" value="<%= device.category %>">
+                                            <input type="hidden" name="activeness" value="<%= device.activeness %>">
+                                        </form>
                                             <div class="text-center p-4 basis-1/6">
                                                 <div
                                                     class="bg-background border-4 border-secondary/50 shadow-2xl shadow-secondary hover:bg-background hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
@@ -103,7 +136,7 @@
                 });
 
                 function filterDevices(classifyBy) {
-                    window.location.href = `/roomList?classifyBy=${classifyBy}`;
+                    window.location.href = `/addDevice?classifyBy=${classifyBy}`;
                 }
             </script>
     </body>

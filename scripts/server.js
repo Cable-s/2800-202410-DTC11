@@ -556,8 +556,72 @@ app.get("/coffeemachine", (req, res) => {
   res.render("coffeemachine.ejs")
 })
 
-app.get("/addDevice", isAuthenticated, (req, res) => {
-  res.render("addDevice.ejs")
+app.get("/addDevice", isAuthenticated, async (req, res) => {
+  try {
+    // Get the username from the session
+    const username = req.session.user.username;
+
+    // Check if the username is not found in the session
+    if (!username) {
+      throw new Error('Username not found in session');
+    }
+
+    // Default to 'room' when enter the roomList page
+    const { classifyBy = 'room' } = req.query;
+
+    // Find user's devices from the database
+    const userDevices = await devices.find({}).lean();
+
+    // Store devices by room or category or activeness
+    let devicesGrouped = {};
+
+    // Iterate over each device and group them based on the classifyBy parameter
+    userDevices.forEach(device => {
+      // Check if the device has users and filter the user array
+      const matchedUser = device.users.find(user => user.username === username);
+
+      if (matchedUser) {
+        // Get the icon for the device
+        const icon = getDeviceIcon(device.deviceName);
+        device.icon = icon;
+
+        // CHeck if the classifyBy is set to 'category'
+        if (classifyBy === 'category') {
+          if (!devicesGrouped[device.category]) {
+            devicesGrouped[device.category] = [];
+          }
+          // JS spread operator to merge properties from two objects into a new object, which is then added to an array
+          devicesGrouped[device.category].push({ ...device, ...matchedUser });
+
+          // Group devices by activeness
+        } else if (classifyBy === 'activeness') {
+          if (!devicesGrouped[matchedUser.activeness]) {
+            devicesGrouped[matchedUser.activeness] = [];
+          }
+          devicesGrouped[matchedUser.activeness].push({ ...device, ...matchedUser });
+
+          // Default grouping by room
+        } else {
+          if (!devicesGrouped[matchedUser.room]) {
+            devicesGrouped[matchedUser.room] = [];
+          }
+          devicesGrouped[matchedUser.room].push({ ...device, ...matchedUser });
+        }
+      }
+    });
+
+    // Render the roomList page with the grouped devices
+    res.render('addDevice', { devicesGrouped, classifyBy });
+
+  } catch (err) {
+    // Handle any errors that occur during the process
+    console.error('Error fetching devices:', err);
+    res.status(404).send('Server error');
+  }
+})
+
+app.post("/addDevice", isAuthenticated, async (req, res) => {
+  res.send(req.body)
 })
 
 // 404 catch route
