@@ -436,7 +436,6 @@ app.get("/devicesPage", isAuthenticated, (req, res) => {
 app.get("/deviceRoutines", isAuthenticated, async (req, res) => {
   try {
     const routines = await Routine.find({ userName: req.session.user.username });
-    // checks if active should be true or false
     const updatedRoutines = updateRoutineActiveness(routines);
     res.render("deviceRoutines", { routines: updatedRoutines });
   } catch (error) {
