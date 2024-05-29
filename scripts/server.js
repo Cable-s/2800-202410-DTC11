@@ -517,7 +517,7 @@ app.get("/editFunction", isAuthenticated, (req, res) => {
 
 app.post("/addConfiguredDevice", isAuthenticated, async (req, res) => {
   try {
-    res.render("createRoutine.ejs")
+    res.redirect("/createRoutine")
   } catch (error) {
     console.error("Error updating device:", error);
     res.status(500).send("Server error");
