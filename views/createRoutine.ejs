@@ -57,6 +57,7 @@
                         <div id="deviceCardsContainer" class="flex flex-col space-y-4 p-2 mt-8">
                             <!-- Device cards will be inserted here dynamically -->
                         </div>
+                    </form>
                 </div>
             </div>
             <button type="button" onclick="window.location.href='/addDevice'"
@@ -65,45 +66,11 @@
             <button type="submit"
                 class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">Save
                 Routine</button>
-            </form>
         </div>
-        </div>
-                        <div id="deviceCardsContainer" class="flex flex-col space-y-4">
-                            <!-- Device cards will be inserted here dynamically -->
-                        </div>
-                </div>
-            </div>
-            <button type="button" onclick="window.location.href='/addDevice'"
-                class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">
-                Add Device</button>
-            <button type="submit"
-                class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">Save
-                Routine</button>
-            </form>
-        </div>
-        </div>
+
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const activeDaysInput = document.getElementById('activeDays');
-                const dateButtons = document.querySelectorAll('.date-button');
-                const selectedDays = [];
-
-                dateButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const day = button.getAttribute('data-day');
-                        if (selectedDays.includes(day)) {
-                            selectedDays.splice(selectedDays.indexOf(day), 1);
-                            button.classList.remove('bg-secondary', 'text-primary');
-                        } else {
-                            selectedDays.push(day);
-                            button.classList.add('bg-secondary', 'text-primary');
-                        }
-                        activeDaysInput.value = selectedDays.join(',');
-                    });
-                });
-
-                // Populate device cards from local storage
                 const deviceCardsContainer = document.getElementById('deviceCardsContainer');
                 const addedDevices = JSON.parse(localStorage.getItem('addedDevices')) || [];
 
@@ -118,9 +85,11 @@
                     const editButton = document.createElement('button');
                     editButton.className = 'bg-secondary text-primary px-4 py-1 rounded-full';
                     editButton.textContent = 'Edit';
+                    editButton.type = 'button'; // Prevent form submission
+
                     editButton.addEventListener('click', () => {
-                        // Handle edit functionality here
-                        console.log('Edit', device.deviceName);
+                        console.log('Edit button clicked for device:', device.deviceName); // Log button click
+                        window.location.href = `/editDevicePage?deviceName=${encodeURIComponent(device.deviceName)}`;
                     });
 
                     deviceCard.appendChild(deviceNameSpan);

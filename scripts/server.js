@@ -636,6 +636,25 @@ app.post("/addDevice", isAuthenticated, async (req, res) => {
   })
 })
 
+app.get('/editDevicePage', isAuthenticated, async (req, res) => {
+  try {
+    const deviceName = req.query.deviceName;
+    console.log('Device name received:', deviceName); // Log the device name received
+    const device = await devices.find({ deviceName: deviceName });
+    console.log('Device found:', device); // Log the device found
+    if (device.length > 0) {
+      res.render('editDeviceRoutine', { devices: device });
+    } else {
+      res.status(404).send('Device not found');
+    }
+  } catch (error) {
+    console.error('Error fetching device:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
 // 404 catch route
 app.get("*", (req, res) => {
   res.render("404.ejs")

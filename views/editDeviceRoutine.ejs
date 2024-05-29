@@ -1,0 +1,75 @@
+<%- include("top_navbar") %>
+
+<br><br><br><br>
+<!-- post route for device configuration-->
+<form action="/updateDevice" method="POST" id="deviceConfigForm" class="m-[40px]">
+  <!-- find each device you want to configure, should only be one, and find each function for the device-->
+  <% devices.forEach((device) => { Object.keys(device.deviceFunctions).forEach((input) => { %>
+    <!-- is that functions input type a slider -->
+    <% if (device.deviceFunctions[input].type == "slider") { %>
+      <!-- tailwind slider input from https://flowbite.com/docs/forms/range/ -->
+      <label id="<%= input %>Label" for="<%= input %>"
+        class="block mx-auto mb-2 text-lg font-medium text-gray-900 dark:text-gray-900">
+        <%= input %>: <span id="<%= input %>Value"><%= device.deviceFunctions[input].value %></span>
+      </label>
+      <input id="<%= input %>" type="range" name="<%= input %>" value="<%= device.deviceFunctions[input].value %>" min="0" max="100"
+        onchange="updateValue('<%= input %>', this.value)"
+        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input><br><br>
+    <% } else if (device.deviceFunctions[input].type == "toggle") { %>
+      <!-- tailwind toggle input with some changes  -->
+      <label class="inline-flex items-center cursor-pointer">
+        <span class="me-3 text-lg font-medium text-gray-900 dark:text-gray-900">
+          <%= input %>
+        </span>
+        <!-- when changing values to 0 it wont send it to push, so we had to change to this hack -->
+        <input type="hidden" name="<%= input %>" value="0"> <!-- Hidden input for default value -->
+        <input name="<%= input %>" type="checkbox" value="1" class="sr-only peer" <% if (device.deviceFunctions[input].value == 1) { %> checked <% } %>>
+        <!-- Toggle switch is a checkbox -->
+        <div
+          class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+        </div>
+      </label>
+    <% } %>
+  <% }) %>
+  <!-- other form info we need but users can't change -->
+  <input type="hidden" name="deviceName" value="<%= device.deviceName %>">
+  <input type="hidden" name="active" value="false">
+  <% }) %>
+  <!-- submit button -->
+  <button type="submit" class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">
+    Update Device
+  </button>
+</form>
+
+<%- include("bottom_navbar.ejs") %>
+
+<script>
+  function updateValue(id, value) {
+    document.getElementById(id + 'Value').innerText = value;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const deviceCardsContainer = document.getElementById('deviceCardsContainer');
+    const addedDevices = JSON.parse(localStorage.getItem('addedDevices')) || [];
+
+    addedDevices.forEach(device => {
+      const form = document.getElementById('deviceConfigForm');
+      for (let key in device) {
+        if (device.hasOwnProperty(key)) {
+          const input = form.querySelector(`[name="${key}"]`);
+          if (input) {
+            if (input.type === 'checkbox') {
+              input.checked = device[key] === "1";
+            } else {
+              input.value = device[key];
+              const label = document.getElementById(`${key}Value`);
+              if (label) {
+                label.innerText = device[key];
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
