@@ -467,9 +467,61 @@ app.post("/recovery", async (req, res) => {
       // subject line
       subject: "password recovery",
       //plain text body
-      text: `Your recovery code is ${randomCode}`,
+      text:
+        `Harmonia 
+      Hi ${userForRecovery.firstName}, you have requested a recovery code for your account
+      Your recovery code is ${randomCode}
+      Please do not reply to this email.
+      Thanks
+      © 2024 Harmonia. All Rights Reserved.
+      `,
       // html body
-      html: `<p>Your recovery code is <b>${randomCode}</b></p>`,
+      html:
+        `
+        <html>
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Harmonia</title>
+          <link rel="icon" type="image/x-icon" href="../images/app_logo.png" />
+      
+          <!-- our own scripts -->
+          <script src="https://cdn.tailwindcss.com"></script>
+          <script>
+            tailwind.config = {
+              theme: {
+                extend: {
+                  colors: {
+                    primary: "#2D2B32",
+                    secondary: "#B2EBF2",
+                    background: "#222229",
+                    accent: "white",
+                  },
+                },
+              },
+            };
+          </script>
+        </head>
+      <body class="m-[5px]">
+      <h1 style="display: flex; flex-direction: row; align-items: center;"><img width="40px" height="40px" src="https://two800-202410-dtc11-gyjq.onrender.com/app_logo.png"></img>Harmonia</h1><br><br>
+      <p>Hi <b>${userForRecovery.firstName}</b>, you have requested a recovery code for your account</p>
+      <p>Your recovery code is <b>${randomCode}</b></p>
+      <br>
+      <p>Please do not reply to this email.</p>
+      <p>Thanks </p>
+      <br>
+        <!-- footer from tailwind https://flowbite.com/docs/components/footer/ with changes-->
+      <footer class="bg-white rounded-lg shadow m-4">
+        <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+          <span class="text-sm text-gray-500 sm:text-center">© 2024 <a href="https://two800-202410-dtc11-gyjq.onrender.com/" class="hover:underline">Harmonia</a>. All Rights Reserved.
+        </span>
+        </div>
+      </footer>
+      
+      
+      </body>
+      </html>
+      `,
     });
     //render newPassword page and send info to change password
     res.render("newPassword", {
