@@ -428,31 +428,6 @@ app.get("/profile", isAuthenticated, (req, res) => {
   });
 });
 
-// app.get("/connectedRooms", isAuthenticated, (req, res) => {
-//   let userDeviceRooms = new Array()
-//   let username = req.session.user.username;
-//   console.log(username);
-
-//   devices.find({}).then(async (result) => {
-//     result.forEach(async (device) => {
-//       console.log(device.deviceName)
-
-//       const matchedUser = await device.users.find(user => user.username === username);
-//       if (matchedUser != undefined && matchedUser.username == username) {
-//         userDeviceRooms.push(matchedUser.room)
-//       }
-//     })
-
-//     const allUsersRooms = await userDeviceRooms
-//     res.render("connectedRooms.ejs", {allUsersRooms});
-//   });
-// });
-
-// app.post("/connectedRooms", async (req, res) => {
-//   const selectedRoom = req.body.room;
-//   console.log(selectedRoom);
-// })
-
 app.get("/devicesPage", isAuthenticated, (req, res) => {
   res.render("devicesPage.ejs");
 });
@@ -486,7 +461,7 @@ app.get("/createFunction", isAuthenticated, (req, res) => {
 });
 
 app.post('/create-routine', async (req, res) => {
-  const { routineName, routineStart, routineEnd, activeDays } = req.body;
+  const { routineName, routineStart, routineEnd, activeDays, devices } = req.body;
 
   // Convert time to Unix timestamp (seconds since midnight). for example 1 am would be represented as 3600 and 1:30 am would be 5400
   const convertToUnixTimestamp = (time) => {
@@ -498,9 +473,10 @@ app.post('/create-routine', async (req, res) => {
     routineName,
     routineStart: convertToUnixTimestamp(routineStart),
     routineEnd: convertToUnixTimestamp(routineEnd),
-    activeDays: activeDays.split(','), //form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
+    activeDays: activeDays.split(','), // form is saved as Monday,Tuesday, etc.. so it must be split into an array before saved into mongo
     userName: req.session.user.username,
-    active: false
+    active: false,
+    devices: JSON.parse(devices) // Parse the devices JSON string
   });
 
   try {
@@ -650,6 +626,17 @@ app.get('/editDevicePage', isAuthenticated, async (req, res) => {
   } catch (error) {
     console.error('Error fetching device:', error);
     res.status(500).send('Server error');
+  }
+});
+
+app.post('/updateDevice', isAuthenticated, async (req, res) => {
+  try {
+    const { deviceName, ...updatedValues } = req.body;
+    console.log('Updated values:', updatedValues);
+    res.redirect('/createRoutine');
+  } catch (error) {
+    console.error('Error updating device:', error);
+    res.status(404).send('Server error');
   }
 });
 

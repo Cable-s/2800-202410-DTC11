@@ -12,7 +12,7 @@
 
             <div class="container mx-auto p-4 max-w-lg bg-primary rounded-lg shadow-lg">
                 <div class="p-4 pb-0">
-                    <form action="/create-routine" method="POST">
+                    <form id="routineForm" action="/create-routine" method="POST">
                         <!-- Routine Name -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-secondary">Name:</label>
@@ -57,20 +57,38 @@
                         <div id="deviceCardsContainer" class="flex flex-col space-y-4 p-2 mt-8">
                             <!-- Device cards will be inserted here dynamically -->
                         </div>
+                        <input type="hidden" name="devices" id="devices">
                     </form>
                 </div>
             </div>
             <button type="button" onclick="window.location.href='/addDevice'"
                 class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">
                 Add Device</button>
-            <button type="submit"
+            <button form="routineForm" type="submit"
                 class="w-full bg-secondary text-primary py-2 rounded-md focus:outline-none focus:ring focus:ring-secondary mt-4">Save
                 Routine</button>
         </div>
 
-        </div>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
+                const activeDaysInput = document.getElementById('activeDays');
+                const dateButtons = document.querySelectorAll('.date-button');
+                const selectedDays = [];
+
+                dateButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const day = button.getAttribute('data-day');
+                        if (selectedDays.includes(day)) {
+                            selectedDays.splice(selectedDays.indexOf(day), 1);
+                            button.classList.remove('bg-secondary', 'text-primary');
+                        } else {
+                            selectedDays.push(day);
+                            button.classList.add('bg-secondary', 'text-primary');
+                        }
+                        activeDaysInput.value = selectedDays.join(',');
+                    });
+                });
+
                 const deviceCardsContainer = document.getElementById('deviceCardsContainer');
                 const addedDevices = JSON.parse(localStorage.getItem('addedDevices')) || [];
 
@@ -88,7 +106,6 @@
                     editButton.type = 'button'; // Prevent form submission
 
                     editButton.addEventListener('click', () => {
-                        console.log('Edit button clicked for device:', device.deviceName); // Log button click
                         window.location.href = `/editDevicePage?deviceName=${encodeURIComponent(device.deviceName)}`;
                     });
 
@@ -96,6 +113,27 @@
                     deviceCard.appendChild(editButton);
                     deviceCardsContainer.appendChild(deviceCard);
                 });
+
+                const routineForm = document.getElementById('routineForm');
+                const devicesInput = document.getElementById('devices');
+                console.log('routineForm:', routineForm); // Debugging
+                console.log('devicesInput:', devicesInput); // Debugging
+
+                if (routineForm && devicesInput) {
+                    routineForm.addEventListener('submit', (event) => {
+                        // Create an object to hold devices in the desired format
+                        const devicesObject = {};
+                        addedDevices.forEach(device => {
+                            const { deviceName, ...functions } = device;
+                            devicesObject[deviceName] = functions;
+                        });
+
+                        devicesInput.value = JSON.stringify(devicesObject);
+                        console.log('Submitting devices:', devicesInput.value); // Debugging
+                    });
+                } else {
+                    console.error('Form or devices input not found');
+                }
             });
         </script>
 
