@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harmonia</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script
+        src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -25,23 +26,23 @@
 
 <body class="bg-primary">
     <%- include("top_navbar.ejs") %>
-    <main class="flex-1 mt-20 mb-10">
-        <!-- Welcome Message -->
-        <section class="w-full py-4">
-            <div class="container px-4">
-                <div class="grid gap-6">
-                    <div class="grid gap-2">
-                        <h1 class="text-2xl text-accent font-bold">Welcome Home, <%= username %>! </h1>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <div class="flex gap-4"></div>
+        <main class="flex-1 mt-20 mb-10">
+            <!-- Welcome Message -->
+            <section class="w-full py-4">
+                <div class="container px-4">
+                    <div class="grid gap-6">
+                        <div class="grid gap-2">
+                            <h1 class="text-2xl text-accent font-bold">Welcome Home, <%= username %>! </h1>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <div class="flex gap-4"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Date section -->
-        <!-- <section class="overflow-auto hover:overflow-scroll content-around">
+            <!-- Date section -->
+            <!-- <section class="overflow-auto hover:overflow-scroll content-around">
             <div class="flex">
                 <div class="text-center p-4">
                     <div class="text-accent">Mon</div>
@@ -50,67 +51,81 @@
             </div>
         </section> -->
 
-        <!-- Routines Section -->
-        <section class="w-full bg-background py-8">
-            <div class="container px-4 md:px-6">
-                <div class="grid gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent">Daily Routines</h2>
-                        <p class="text-gray-300">Your scheduled routines for today.</p>
-                    </div>
-                    <div class="grid gap-4">
-                        <% if (allUsersRoutine.length > 0) { %>
-                            <% allUsersRoutine.forEach(routine => { %>
-                                <div class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-primary">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                    <div class="flex-1">
-                                        <p><%= routine.name %></p>
-                                        <p class="text-gray-500"><%= Math.round(routine.start/3600) %>:00 - <%= Math.round(routine.end/3600) %>:00</p>
+            <!-- Routines Section -->
+            <section class="w-full bg-background py-8">
+                <div class="container px-4 md:px-6">
+                    <div class="grid gap-6">
+                        <div class="grid gap-2">
+                            <h2 class="text-2xl font-bold text-accent">Daily Routines</h2>
+                            <p class="text-gray-300">Your scheduled routines for today.</p>
+                        </div>
+                        <div class="grid gap-4">
+                            <% if (allUsersRoutine.length> 0) { %>
+                                <% allUsersRoutine.forEach(routine=> { %>
+                                    <div class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-primary">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        <div class="flex-1">
+                                            <p>
+                                                <%= routine.name %>
+                                            </p>
+                                            <p class="text-gray-500">
+                                                <%= Math.round(routine.start/3600) %>:00 - <%=
+                                                        Math.round(routine.end/3600) %>:00
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            <% }) %>
-                        <% } else { %>
-                            <div class="text-accent">No routines scheduled for today.</div>
-                        <% } %>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="text-accent">No routines scheduled for today.</div>
+                                            <% } %>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Active Devices -->
-        <section class="w-full py-8">
-            <div class="container px-4">
-                <div class="grid gap-6">
-                    <div class="grid gap-2">
-                        <h2 class="text-2xl font-bold text-accent tracking-tight">Active Devices</h2>
-                        <p class="text-gray-300">Devices currently in use in your home.</p>
-                    </div>
-                    <div class="grid gap-4">
-                        <% var count = 0%>
-                        <% allUsersDevices.forEach((device) => { %>
-                            <% if (device.matchedUser.activeness == 'on') { %>
-                                <% count++ %>
-                                <div class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm font-semibold">
-                                    <i class="fas <%= device.icon %> text-background"></i>
-                                    <div class="flex-1">
-                                        <p class=""><%= device.name.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + device.name.replace(/([A-Z])/g, ' $1').slice(1) %></p>
-                                    </div>
-                                </div>
-                            <% } %>
-                        <% }) %>
-                        <% if (count == 0) { %>
-                            <div class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm font-semibold">
-                                You have no connected devices
-                            </div>
-                        <% } %>
+            <!-- Active Devices -->
+            <section class="w-full py-8">
+                <div class="container px-4">
+                    <div class="grid gap-6">
+                        <div class="grid gap-2">
+                            <h2 class="text-2xl font-bold text-accent tracking-tight">Active Devices</h2>
+                            <p class="text-gray-300">Devices currently in use in your home.</p>
+                        </div>
+                        <div class="grid gap-4">
+                            <% var count=0%>
+                                <% allUsersDevices.forEach((device)=> { %>
+                                    <% if (device.matchedUser.activeness=='on' ) { %>
+                                        <% count++ %>
+                                            <div
+                                                class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm font-semibold">
+                                                <i class="fas <%= device.icon %> text-background"></i>
+                                                <div class="flex-1">
+                                                    <p class="">
+                                                        <%= device.name.replace(/([A-Z])/g, ' $1'
+                                                            ).charAt(0).toUpperCase() +
+                                                            device.name.replace(/([A-Z])/g, ' $1' ).slice(1) %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                                <% }) %>
+                                                    <% if (count==0) { %>
+                                                        <div
+                                                            class="flex items-center gap-4 rounded-lg bg-white p-4 shadow-sm font-semibold">
+                                                            You have no connected devices
+                                                        </div>
+                                                        <% } %>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </main>
-    <%- include("bottom_navbar.ejs") %>
+            </section>
+        </main>
+        <%- include("bottom_navbar.ejs") %>
 </body>
+
 </html>
