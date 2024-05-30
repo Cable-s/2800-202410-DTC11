@@ -98,7 +98,7 @@ async function sendMessages(assistant, userMessageHistory, aiMessageHistory, use
     return resp
 }
 
-async function receiveResponse(run){
+async function receiveResponse(run){ // get the gpt response
     if (run.status === 'completed') {
         const messages = await openai.beta.threads.messages.list(
             run.thread_id

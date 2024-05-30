@@ -7,7 +7,6 @@ function readGptResponse(message, userName){
 }
 
 async function createRoutine(newRoutine, devices){
-    console.log(newRoutine)
     createdRoutine = await devices.create(newRoutine)
     
 }
