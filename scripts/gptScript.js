@@ -39,6 +39,7 @@ PROMPT = `
     Would you like to Save or Edit the routine?
 
     If a user says "Save", tell the user (by their name) that the routine is saved and the routine page was updated with the new routines.
+    Never include "Harmonia AI Responded: " in your responses.
 
     If a user says "Save as json", you will send the response in this format, changing the values to match the created routine. The routine time should be unix, like 54900 seconds represents 15.25, which represents 3:15pm:
     "routineName": "Routine Name created",

@@ -690,7 +690,7 @@ app.post("/sendMessage", isAuthenticated, async (req, res) => {
     userMessageHistory.push("Save as json")
     gptResponseJson = await sendMessages(assistant, userMessageHistory, aiMessageHistory, userName, alluserDevices)
     try {
-      newRoutine = readGptResponse(gptResponseJson, userName)
+      newRoutine = await readGptResponse(gptResponseJson, userName)
       createRoutine(newRoutine, routines)
     } catch (err) {
       console.log(err)
