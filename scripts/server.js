@@ -13,12 +13,13 @@ const { createAssistant, sendMessages } = require("./gptScript.js");
 const { parseSchema } = require("./getUserDevices.js");
 const { readGptResponse, createRoutine } = require("./createRoutine.js");
 const { updateRoutineActiveness } = require("./checkRoutine.js");
-
+const cors = require("cors")
 
 const app = express();
+app.use(cors()) // for sending requests to the render site /sendMessage
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
-app.use(bodyParser.json()); // for the /sendMessage endpoint
+app.use(bodyParser.json()); // for returning json responses in the /sendMessage endpoint
 
 main().catch((err) => console.log(err));
 
