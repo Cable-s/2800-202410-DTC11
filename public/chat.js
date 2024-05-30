@@ -16,7 +16,7 @@ async function fetchUserMessage(){
         appendUserMessage(messageValue)
 
         // send the post request to the /send-message EP to get the gpt response
-        let gptResponse = (await axios.post("http://localhost:3000/sendMessage", { // change the EP to where the site is hosted
+        let gptResponse = (await axios.post("https://two800-202410-dtc11-gyjq.onrender.com/sendMessage", { // change the EP to where the site is hosted
             message: messageValue
         })).data
         appendAiMessage(gptResponse)
