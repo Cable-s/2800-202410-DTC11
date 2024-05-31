@@ -6,6 +6,7 @@ In our fast-paced world, where we increasingly depend on technology, our Smart H
 #### frontend
 - Tailwind CSS
 - EJS
+- HTML
 
 #### backend
 - Express.js
@@ -107,15 +108,24 @@ Each time external help is used for this project, a reference will be put here a
 - Stack Overflow https://stackoverflow.com/ was used for debugging and problem solving
 - ChatGPT https://chat.openai.com/ was used for debugging and problem solving
 
-### AI (CAINAN ANSWER THESE)
-- Did you use AI to help create your app? If so, how? Be specific
-- DId you use AI to create data sets or clean data sets? If so, how? Be specific.
-- Does your app use AI? If so, how? Be specific.
-- Did you encounter any limitations? What were they, and how did you overcome them? Be specific.
+### AI
+1. Did you use AI to help create your app? If so, how? Be specific 
+- A lot of us used GitHub Copilot to generate code templates for mundane and repetitive tasks, like creating an object or adding a .forEach loop
+2. Did you use AI to create data sets or clean data sets? If so, how? Be specific.
+- We used GPT 3.5 to generate responses to user messages in a chatbot page
+3. Does your app use AI? If so, how? Be specific.
+- Our app utilizes GPT's API to generate responses from a users messages inside a chat page, in order to help suggest device routines for users. In addition, we leverage responses to create routines in the database
+4. Did you encounter any limitations? What were they, and how did you overcome them? Be specific.
+- OpenAI's API has no free tier, which means we had to pay to use their API, with every request lowering our API token balance
+- The openai SDK does not provide an ability to "save" messages, which means that we had to manually save all user messages in the backend
 
 ### Contact Information
 Caleb Janzen:
 - Email: caleb.s.janzen@gmail.com
 - Discord: cable_s
+
+Cainan Ziemski Cho
+- Email: cziemskicho@my.bcit.ca
+- Discord: Caizc
 
 *other team members:*
