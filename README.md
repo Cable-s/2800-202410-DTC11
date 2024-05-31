@@ -25,7 +25,111 @@ In our fast-paced world, where we increasingly depend on technology, our Smart H
 - Mongo Atlas
 
 ### listing of File Contents of folder
-dont know what this means
+```
+|   .git
+
+|   node_modules
+
+|   .env
+
+|   .gitignore
+
+|   package-lock.json
+
+|   package.json
+
+|   README.md
+
+|
+
++---public
+
+|   |    app_logo.png
+
+|   |    chat.js
+
+|       
+
++---scripts
+
+|    |   checkRoutine.js
+
+|    |   createRoutine.js
+
+|    |   getUserDevices.js
+
+|    |   gptScript.js
+
+|    |   server.js
+
+|    |   test.js
+
+|       
+
++---views
+
+|    |   404.ejs
+
+|    |   addDevice.ejs
+
+|    |   admin.ejs
+
+|    |   blah.html
+
+|    |   bottom_navbar.ejs
+
+|    |   chatbot.ejs
+
+|    |   chatBot.html
+
+|    |   configureDeviceRoutine.ejs
+
+|    |   connectedRooms.ejs
+
+|    |   createFunction.ejs
+
+|    |   createRoutine.ejs
+
+|    |   deviceDetails.ejs
+
+|    |   deviceInfo.ejs
+
+|    |   deviceRoutines.ejs
+
+|    |   devicesPage.ejs
+
+|    |   editDeviceRoutine.ejs
+
+|    |   editFunction.ejs
+
+|    |   editRoutines.ejs
+
+|    |   foundit.ejs
+
+|    |   home.ejs
+
+|    |   index.ejs
+
+|    |   loadingBar.ejs
+
+|    |   login.ejs
+
+|    |   newPassword.ejs
+
+|    |   profilePage.ejs
+
+|    |   recovery.ejs
+
+|    |   roomList.ejs
+
+|    |   signUp.ejs
+
+|    |   sliderInput.ejs
+
+|    |   top_navbar.ejs
+
+|    |   user_message_template.ejs
+```
 
 ### How to install / run
 #### languages used
@@ -104,10 +208,12 @@ dont know what this means
 
 ### References
 Each time external help is used for this project, a reference will be put here and in the source code where it was used.
+Note: more specific links to pages are placed where that reference was used
 - Tailwind Documentation https://tailwindcss.com/ was used throughout the project
 - Stack Overflow https://stackoverflow.com/ was used for debugging and problem solving
 - ChatGPT https://chat.openai.com/ was used for debugging and problem solving
-- Chatbot template https://tailwindcomponents.com/component/quickchat-chat-layout was used for the chatbot page   
+- Copilot VS Code extension was used to help code. Changes were made to make that starter code work with out code
+- MongoDB documentation https://www.mongodb.com/docs/ was used to reference how to query the database
 
 ### AI
 1. Did you use AI to help create your app? If so, how? Be specific 
@@ -121,12 +227,19 @@ Each time external help is used for this project, a reference will be put here a
 - The openai SDK does not provide an ability to "save" messages, which means that we had to manually save all user messages in the backend
 
 ### Contact Information
-Caleb Janzen:
+Caleb Janzen
 - Email: caleb.s.janzen@gmail.com
 - Discord: cable_s
 
 Cainan Ziemski Cho
 - Email: cziemskicho@my.bcit.ca
-- Discord: caizc.
+- Discord: Caizc
 
-*other team members:*
+Tad(Chaemyoung) Yoon 
+- Email: chaemyoung2015@gmail.com
+
+Brad Hultman
+- Email: braddhultman@gmail.com
+
+Matt Lee
+- Email: MattLee0717@gmail.com
