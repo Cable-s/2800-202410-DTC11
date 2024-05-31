@@ -218,6 +218,12 @@ function isAuthenticated(req, res, next) {
   res.redirect("/login");
 }
 
+/*
+* Home page
+* Github Copilot extension helped writing the code for /home route overall by auto generating codes and comments
+*
+* @ GitHub Coilpot v1.197.0
+*/
 // Home page
 app.get("/home", isAuthenticated, async (req, res) => {
   try {
@@ -257,7 +263,6 @@ app.get("/home", isAuthenticated, async (req, res) => {
 
     res.render("home.ejs", { username, allUsersDevices: usersDevices, allUsersRoutine: usersRoutines });
   } catch (err) {
-    console.error(err);
     res.status(500).send('Server error');
   }
 });
@@ -286,6 +291,12 @@ const deviceIcons = {
   default: "fa-question-circle",
 };
 
+/*
+* Get device icon function
+* Github Copilot extension helped writing the code for getDeviceIcon function overall by auto generating codes
+*
+* @ GitHub Coilpot v1.197.0
+*/
 // Function to get the icon class for a device
 function getDeviceIcon(deviceName) {
   return deviceIcons[deviceName.toLowerCase()] || deviceIcons.default;
@@ -293,7 +304,9 @@ function getDeviceIcon(deviceName) {
 
 /*
 * Room list page
-* Github Copilot helped writing the code for /roomList route
+* Github Copilot extension helped writing the code and comments for /roomList route overall by auto generating codes and comments
+*
+* @ GitHub Coilpot v1.197.0
 */
 // Room list page
 app.get('/roomList', isAuthenticated, async (req, res) => {
@@ -355,14 +368,15 @@ app.get('/roomList', isAuthenticated, async (req, res) => {
 
   } catch (err) {
     // Handle any errors that occur during the process
-    console.error('Error fetching devices:', err);
     res.status(500).send('Server error');
   }
 });
 
 /*
-* Room list page
-* Github Copilot helped writing the code for /deviceDetails route
+* Device Details page
+* Github Copilot extension helped writing the code and comments for /deviceDetails route overall by auto generating codes and comments
+*
+* @ GitHub Coilpot v1.197.0
 */
 // Device details page
 app.get('/deviceDetails', isAuthenticated, async (req, res) => {
@@ -377,7 +391,7 @@ app.get('/deviceDetails', isAuthenticated, async (req, res) => {
     // Get the device name from the query parameters
     const deviceName = req.query.device;
 
-    // Get the device name and username from the query parameters
+    // Get the device name and username
     const device = await devices.findOne({ deviceName }).lean();
     if (!device) {
       return res.status(404).send('Device not found');
@@ -395,14 +409,15 @@ app.get('/deviceDetails', isAuthenticated, async (req, res) => {
 
     res.render('deviceDetails', { device, userDevice });
   } catch (err) {
-    console.error(err);
     res.status(500).send('Server error');
   }
 });
 
 /*
-* Room list page
-* Github Copilot helped writing the code for /updateDeviceFunction route
+* Control device function
+* Github Copilot extension helped writing the code for and comments /updateDeviceFunction route overall by auto generating codes and to find the proper user index
+*
+* @ GitHub Coilpot v1.197.0
 */
 app.post('/updateDeviceFunction', isAuthenticated, async (req, res) => {
   try {
@@ -437,7 +452,6 @@ app.post('/updateDeviceFunction', isAuthenticated, async (req, res) => {
     // After updating the database, redirect the user back to the device details page
     res.redirect(`/deviceDetails?device=${deviceName}`);
   } catch (err) {
-    console.error(err);
     res.status(500).send('Server error');
   }
 });
