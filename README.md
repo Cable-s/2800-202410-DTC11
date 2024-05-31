@@ -25,7 +25,57 @@ In our fast-paced world, where we increasingly depend on technology, our Smart H
 - Mongo Atlas
 
 ### listing of File Contents of folder
-dont know what this means
+C:.
+|   .env
+|   .gitignore
+|   package-lock.json
+|   package.json
+|   README.md
+|
++---public
+|       app_logo.png
+|       chat.js
+|       
++---scripts
+|       checkRoutine.js
+|       createRoutine.js
+|       getUserDevices.js
+|       gptScript.js
+|       server.js
+|       test.js
+|       
++---views
+|       404.ejs
+|       addDevice.ejs
+|       admin.ejs
+|       blah.html
+|       bottom_navbar.ejs
+|       chatbot.ejs
+|       chatBot.html
+|       configureDeviceRoutine.ejs
+|       connectedRooms.ejs
+|       createFunction.ejs
+|       createRoutine.ejs
+|       deviceDetails.ejs
+|       deviceInfo.ejs
+|       deviceRoutines.ejs
+|       devicesPage.ejs
+|       editDeviceRoutine.ejs
+|       editFunction.ejs
+|       editRoutines.ejs
+|       foundit.ejs
+|       home.ejs
+|       index.ejs
+|       loadingBar.ejs
+|       login.ejs
+|       newPassword.ejs
+|       profilePage.ejs
+|       recovery.ejs
+|       roomList.ejs
+|       signUp.ejs
+|       sliderInput.ejs
+|       top_navbar.ejs
+|       user_message_template.ejs
 
 ### How to install / run
 #### languages used
