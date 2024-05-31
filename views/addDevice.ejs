@@ -1,9 +1,3 @@
-<!--
-* Device(room) list page
-* Github Copilot extension helped writing the code for this page overall by auto generating codes
-*
-* @ GitHub Coilpot v1.197.0
--->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,8 +23,9 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<body class="bg-background">
-    <%- include("top_navbar.ejs") %>
+<%- include("top_navbar.ejs") %>
+
+    <body class="bg-background">
         <main class="flex-1 mt-16 mb-10 mx-2">
             <!-- Filter section -->
             <section class="w-full py-4">
@@ -63,7 +58,6 @@
                 <div class="container px-4">
                     <div class="grid gap-6">
                         <div class="grid gap-2">
-                            <!-- Header dynamically changes based on the filter applied -->
                             <h1 class="text-2xl text-accent font-bold">
                                 <%= classifyBy==='category' ? 'Device Categories' : classifyBy==='activeness'
                                     ? 'Device Status' : 'Room List' %>
@@ -79,48 +73,41 @@
             <!-- Devices grouped by the selected criterion -->
             <section id="deviceSections" class="mx-4">
                 <% for (let group in devicesGrouped) { %>
-                    <!-- Section for each group of devices -->
                     <section id="<%= group %>_devices" class="w-full bg-primary mt-4 mb-4 py-8 rounded-2xl">
                         <div class="container px-4">
                             <div class="grid grid-cols-1 gap-6">
                                 <div class="grid gap-2">
-                                    <!-- Group header displaying the roup name -->
                                     <h2 class="text-2xl font-bold text-accent">
-                                        <!-- Capitalize the first letter of the group name -->
                                         <%= group.charAt(0).toUpperCase() + group.slice(1) %>
                                     </h2>
-                                    <!-- Description of the devices in the group -->
                                     <p class="text-accent">Your devices in the <%= group.charAt(0).toUpperCase() +
                                             group.slice(1) %>
-                                            <!-- Conditional statement to display 'category', 'status', or 'room' based on the filter applied -->
                                             <%= classifyBy==='category' ? 'category' : classifyBy==='activeness'
                                                 ? 'status' : 'room' %>.
                                     </p>
                                 </div>
-                                <!-- section for listing the devices in a flexbox layout -->
                                 <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
                                     <% devicesGrouped[group].forEach(device=> { %>
-                                        <!-- Link the device Details page for clicked device -->
-                                        <a href="/deviceDetails?device=<%= device.deviceName %>">
+                                        <a onclick="document.getElementById('<%= device.deviceName %>').click()">
+                                        <form action="/addDevice" method="POST">
+                                            <button type="submit" class="hidden" id="<%= device.deviceName %>"></button>
+                                            <input type="hidden" name="deviceName" value="<%= device.deviceName %>">
+                                            <input type="hidden" name="icon" value="<%= device.icon %>">
+                                            <input type="hidden" name="room" value="<%= device.room %>">
+                                            <input type="hidden" name="category" value="<%= device.category %>">
+                                            <input type="hidden" name="activeness" value="<%= device.activeness %>">
+                                        </form>
                                             <div class="text-center p-4 basis-1/6">
-                                                <!-- Display icons dynamically for each devices -->
                                                 <div
                                                     class="bg-background border-4 border-secondary/50 shadow-2xl shadow-secondary hover:bg-background hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
-                                                    <!-- Device icon -->
                                                     <i class="fas <%= device.icon %> text-secondary"></i>
                                                 </div>
                                                 <div class="text-accent text-xs">
-                                                    <!-- Device name -->
-                                                    <!-- 
-                                                        * Replace the device name with spaces before capital letters and capitalize the first letter.
-                                                        * I wrote this ejs code by modifying this code from stackoverflow.com.
-                                                        * @see https://stackoverflow.com/questions/7225407/convert-camelcasetext-to-title-case-text
-                                                     -->
-                                                    <%= device.deviceName.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + device.deviceName.replace(/([A-Z])/g, ' $1').slice(1) %>
+                                                    <%= device.deviceName %>
                                                 </div>
                                             </div>
                                         </a>
-                                        <% }) %>
+                                    <% }) %>
                                 </section>
                             </div>
                         </div>
@@ -133,11 +120,12 @@
 
 
         <!--
-            defines a function that changes the URL of the current page to include a query parameter, 
-            which triggers a re-rendering of the page with devices classified according to the selected criterion (e.g., room, category, or activeness).
+        defines a function that changes the URL of the current page to include a query parameter, 
+        which triggers a re-rendering of the page with devices classified according to the selected criterion (e.g., room, category, or activeness).
         
-            Generated by ChatGPT 4o
-            @author https://chat.openai.com/
+        Generated by ChatGPT 4o
+        
+        @author https://chat.openai.com/
         -->
 
             <script>
@@ -148,9 +136,9 @@
                 });
 
                 function filterDevices(classifyBy) {
-                    window.location.href = `/roomList?classifyBy=${classifyBy}`;
+                    window.location.href = `/addDevice?classifyBy=${classifyBy}`;
                 }
             </script>
-</body>
+    </body>
 
 </html>
