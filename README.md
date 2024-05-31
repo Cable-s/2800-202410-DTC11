@@ -25,10 +25,10 @@ In our fast-paced world, where we increasingly depend on technology, our Smart H
 - Mongo Atlas
 
 ### listing of File Contents of folder
+```
+|   .git
 
-| .git
-
-| node_modules
+|   node_modules
 
 |   .env
 
@@ -118,17 +118,18 @@ In our fast-paced world, where we increasingly depend on technology, our Smart H
 
 |    |   profilePage.ejs
 
-|	|   recovery.ejs
+|    |   recovery.ejs
 
-|	|   roomList.ejs
+|    |   roomList.ejs
 
-|	|   signUp.ejs
+|    |   signUp.ejs
 
-|	|   sliderInput.ejs
+|    |   sliderInput.ejs
 
-|	|   top_navbar.ejs
+|    |   top_navbar.ejs
 
-|	|   user_message_template.ejs
+|    |   user_message_template.ejs
+```
 
 ### How to install / run
 #### languages used
