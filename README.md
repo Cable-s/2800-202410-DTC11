@@ -208,9 +208,12 @@ In our fast-paced world, where we increasingly depend on technology, our Smart H
 
 ### References
 Each time external help is used for this project, a reference will be put here and in the source code where it was used.
+Note: more specific links to pages are placed where that reference was used
 - Tailwind Documentation https://tailwindcss.com/ was used throughout the project
 - Stack Overflow https://stackoverflow.com/ was used for debugging and problem solving
 - ChatGPT https://chat.openai.com/ was used for debugging and problem solving
+- Copilot VS Code extension was used to help code. Changes were made to make that starter code work with out code
+- MongoDB documentation https://www.mongodb.com/docs/ was used to reference how to query the database
 
 ### AI
 1. Did you use AI to help create your app? If so, how? Be specific 
