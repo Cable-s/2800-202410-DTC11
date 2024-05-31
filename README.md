@@ -227,7 +227,7 @@ Note: more specific links to pages are placed where that reference was used
 - The openai SDK does not provide an ability to "save" messages, which means that we had to manually save all user messages in the backend
 
 ### Contact Information
-Caleb Janzen:
+Caleb Janzen
 - Email: caleb.s.janzen@gmail.com
 - Discord: cable_s
 
@@ -235,4 +235,11 @@ Cainan Ziemski Cho
 - Email: cziemskicho@my.bcit.ca
 - Discord: Caizc
 
-*other team members:*
+Tad(Chaemyoung) Yoon 
+- Email: chaemyoung2015@gmail.com
+
+Brad Hultman
+- Email: braddhultman@gmail.com
+
+Matt Lee
+- Email: MattLee0717@gmail.com
