@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonia</title>
+    <script
+        src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D2B32',
+                        secondary: '#B2EBF2',
+                        background: '#222229',
+                        accent: 'white'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<%- include("top_navbar.ejs") %>
+
+    <body class="bg-background">
+        <main class="flex-1 mt-16 mb-10 mx-2">
+            <!-- Filter section -->
+            <section class="w-full py-4">
+                <div class="container px-4">
+                    <div class="grid gap-6">
+                        <div class="border-b border-gray-700 bg-primary px-4 py-5 rounded-lg">
+                            <div class="flex items-center justify-center">
+                                <div class="mt-2">
+                                    <h3 class="text-2xl font-semibold text-accent">Classify Devices</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-center gap-4">
+                                <!-- Filter by rooms -->
+                                <button id="filter-room"
+                                    class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-24 h-10 rounded-full inline-flex items-center justify-center">Room</button>
+                                <!-- Filter by categories -->
+                                <button id="filter-category"
+                                    class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-24 h-10 rounded-full inline-flex items-center justify-center">Category</button>
+                                <!-- Filter by status -->
+                                <button id="filter-activeness"
+                                    class="bg-background hover:bg-secondary hover:shadow-lg hover:text-primary text-secondary text-base w-24 h-10 rounded-full inline-flex items-center justify-center">Status</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Shows what filter applied currently -->
+            <section class="w-full py-4">
+                <div class="container px-4">
+                    <div class="grid gap-6">
+                        <div class="grid gap-2">
+                            <h1 class="text-2xl text-accent font-bold">
+                                <%= classifyBy==='category' ? 'Device Categories' : classifyBy==='activeness'
+                                    ? 'Device Status' : 'Room List' %>
+                            </h1>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <div class="flex gap-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Devices grouped by the selected criterion -->
+            <section id="deviceSections" class="mx-4">
+                <% for (let group in devicesGrouped) { %>
+                    <section id="<%= group %>_devices" class="w-full bg-primary mt-4 mb-4 py-8 rounded-2xl">
+                        <div class="container px-4">
+                            <div class="grid grid-cols-1 gap-6">
+                                <div class="grid gap-2">
+                                    <h2 class="text-2xl font-bold text-accent">
+                                        <%= group.charAt(0).toUpperCase() + group.slice(1) %>
+                                    </h2>
+                                    <p class="text-accent">Your devices in the <%= group.charAt(0).toUpperCase() +
+                                            group.slice(1) %>
+                                            <%= classifyBy==='category' ? 'category' : classifyBy==='activeness'
+                                                ? 'status' : 'room' %>.
+                                    </p>
+                                </div>
+                                <section class="flex flex-wrap place-content-center gap-x-8 gap-y-4">
+                                    <% devicesGrouped[group].forEach(device=> { %>
+                                        <a onclick="document.getElementById('<%= device.deviceName %>').click()">
+                                        <form action="/addDevice" method="POST">
+                                            <button type="submit" class="hidden" id="<%= device.deviceName %>"></button>
+                                            <input type="hidden" name="deviceName" value="<%= device.deviceName %>">
+                                            <input type="hidden" name="icon" value="<%= device.icon %>">
+                                            <input type="hidden" name="room" value="<%= device.room %>">
+                                            <input type="hidden" name="category" value="<%= device.category %>">
+                                            <input type="hidden" name="activeness" value="<%= device.activeness %>">
+                                        </form>
+                                            <div class="text-center p-4 basis-1/6">
+                                                <div
+                                                    class="bg-background border-4 border-secondary/50 shadow-2xl shadow-secondary hover:bg-background hover:shadow-lg hover:text-primary text-secondary text-xl font-bold w-14 h-14 rounded-full inline-flex items-center justify-center">
+                                                    <i class="fas <%= device.icon %> text-secondary"></i>
+                                                </div>
+                                                <div class="text-accent text-xs">
+                                                    <%= device.deviceName %>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    <% }) %>
+                                </section>
+                            </div>
+                        </div>
+                    </section>
+                    <% } %>
+            </section>
+        </main>
+
+        <%- include("bottom_navbar.ejs") %>
+
+
+        <!--
+        defines a function that changes the URL of the current page to include a query parameter, 
+        which triggers a re-rendering of the page with devices classified according to the selected criterion (e.g., room, category, or activeness).
+        
+        Generated by ChatGPT 4o
+        
+        @author https://chat.openai.com/
+        -->
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.getElementById('filter-room').addEventListener('click', () => filterDevices('room'));
+                    document.getElementById('filter-category').addEventListener('click', () => filterDevices('category'));
+                    document.getElementById('filter-activeness').addEventListener('click', () => filterDevices('activeness'));
+                });
+
+                function filterDevices(classifyBy) {
+                    window.location.href = `/addDevice?classifyBy=${classifyBy}`;
+                }
+            </script>
+    </body>
+
+</html>
