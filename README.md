@@ -107,6 +107,7 @@ Each time external help is used for this project, a reference will be put here a
 - Tailwind Documentation https://tailwindcss.com/ was used throughout the project
 - Stack Overflow https://stackoverflow.com/ was used for debugging and problem solving
 - ChatGPT https://chat.openai.com/ was used for debugging and problem solving
+- Chatbot template https://tailwindcomponents.com/component/quickchat-chat-layout was used for the chatbot page   
 
 ### AI
 1. Did you use AI to help create your app? If so, how? Be specific 
@@ -126,6 +127,6 @@ Caleb Janzen:
 
 Cainan Ziemski Cho
 - Email: cziemskicho@my.bcit.ca
-- Discord: Caizc
+- Discord: caizc.
 
 *other team members:*
